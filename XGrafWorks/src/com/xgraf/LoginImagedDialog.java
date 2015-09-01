@@ -10,6 +10,7 @@ import com.xgraf.orm.dbobject.DbObject;
 import com.xgraf.remote.IMessageSender;
 import com.xlend.util.*;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -17,6 +18,7 @@ import java.awt.event.ActionListener;
 import java.rmi.Naming;
 import java.util.prefs.Preferences;
 import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLayeredPane;
 import javax.swing.JMenu;
@@ -35,7 +37,7 @@ import javax.swing.UnsupportedLookAndFeelException;
  */
 public class LoginImagedDialog extends PopupDialog {
 
-    private static final String BACKGROUNDIMAGE = "bookslogin.jpg";
+    private static final String BACKGROUNDIMAGE = "loginbg.png";
     private static final String LOCKIMAGE = "lock.png";
     private final String NMSOFTWARE = "Nick Mukhin (c)2015";
 
@@ -57,7 +59,7 @@ public class LoginImagedDialog extends PopupDialog {
 
     @Override
     protected void fillContent() {
-        XGrafWorks.setWindowIcon(this, "bs.png");
+        XGrafWorks.setWindowIcon(this, XGrafWorks.WIN_ICON);
         okPressed = false;
         buildMenu();
         try {
@@ -96,8 +98,8 @@ public class LoginImagedDialog extends PopupDialog {
         Insets insets = getInsets();
         int dashWidth = img.getWidth();
         int dashHeight = img.getHeight();
-        int yShift = 7;
-        int xShift = 70;
+        int yShift = 15;
+        int xShift = 30;
 
         this.setMinimumSize(new Dimension(dashWidth + insets.left + insets.right - 8,
                 dashHeight + insets.top + insets.bottom + 20));
@@ -105,11 +107,11 @@ public class LoginImagedDialog extends PopupDialog {
         layers.add(controlsPanel, JLayeredPane.DEFAULT_LAYER);
         getContentPane().add(layers, BorderLayout.CENTER);
 
-        loginField.setBounds(150, 120, 225, 26);
-        loginField.setBorder(null);
+        loginField.setBounds(100, 125, 225, 26);
+        //loginField.setBorder(null);
         main.add(loginField);
-        pwdField.setBounds(150, 164, 225, 26);
-        pwdField.setBorder(null);
+        pwdField.setBounds(100, 165, 225, 26);
+        //pwdField.setBorder(null);
         main.add(pwdField);
 
         JButton okButton = new ToolBarButton(LOCKIMAGE);
@@ -127,6 +129,7 @@ public class LoginImagedDialog extends PopupDialog {
         if (pwdmd5.trim().length() > 0) {
             loginField.setSelectedItem(XGrafWorks.readProperty("Lastlogin", ""));
         }
+        //pwdField.setBorder(BorderFactory.createLineBorder(Color.black, 1));
         getRootPane().setDefaultButton(okButton);
         setResizable(false);
     }
@@ -153,7 +156,15 @@ public class LoginImagedDialog extends PopupDialog {
             }
         }));
         m.add(appearanceMenu("Theme"));
+        m.add(new JMenuItem(new AbstractAction("About"){
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new AboutDialog();
+            }
+        }));
         bar.add(m);
+        
         setJMenuBar(bar);
     }
 

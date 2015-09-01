@@ -5,6 +5,7 @@
  */
 package com.xgraf;
 
+import com.jidesoft.plaf.LookAndFeelFactory;
 import com.xgraf.orm.User;
 import com.xgraf.orm.dbobject.DbObject;
 import com.xgraf.remote.IMessageSender;
@@ -46,7 +47,7 @@ public class XGrafWorks {
     private static FileHandler fh;
     private static Properties props;
     private static final String APPNAME = "XGrafWorks";
-    private static final String SERVERNAME = APPNAME + "Server";
+    private static final String SERVERNAME = "XGrafServer";
     private static final String BSCLIENT_CONFIG = APPNAME + ".config";
     private static final String PROPERTYFILENAME = System.getProperty("user.home") + File.separatorChar + BSCLIENT_CONFIG;
     public static final String defaultServerIP = "localhost";
@@ -308,7 +309,49 @@ public class XGrafWorks {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        System.out.println(System.getProperty("user.home"));
+        LookAndFeelFactory.installDefaultLookAndFeelAndExtension();
+        String serverIP = readProperty("ServerAddress", "localhost");
+        while (true) {
+            try {
+                IMessageSender exc = ExchangeFactory.getExchanger("rmi://" + serverIP + "/" + SERVERNAME, getProperties());
+                if (exc == null) {
+                    exc = ExchangeFactory.getExchanger(readProperty("JDBCconnection", "jdbc:mysql://"
+                            + defaultServerIP
+                            + "/" + DBNAME),
+                            getProperties());
+                }
+                if (exc == null) {
+                    configureConnection();
+                } else {
+                    setExchanger(exc);
+                }
+                if (getExchanger() != null && matchVersions() && login(getExchanger())) {
+                    new DashBoard(APPNAME + " v." + version, exchanger);
+                    break;
+                } else {
+                    System.exit(1);
+                }
+            } catch (Exception ex) {
+                logAndShowMessage(ex);
+                if ((serverIP = serverSetup("Check server settings")) == null) {
+                    System.exit(1);
+                } else {
+                    saveProps();
+                }
+            }
+        }
+    }
+
+    public static boolean login(IMessageSender exchanger) {
+        try {
+            new LoginImagedDialog(exchanger);//new Object[]{loginField, pwdField, exchanger});
+            return LoginImagedDialog.isOkPressed();
+        } catch (Throwable ee) {
+            JOptionPane.showMessageDialog(null, "Server failure\nCheck your logs please", "Error:", JOptionPane.ERROR_MESSAGE);
+            log(ee);
+        }
+        return false;
     }
 
     /**

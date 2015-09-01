@@ -84,7 +84,7 @@ public abstract class GeneralFrame extends JFrame implements WindowListener {
     }
 
     protected void fillContentPane() {
-        XGrafWorks.setWindowIcon(this, "bs.png");
+        XGrafWorks.setWindowIcon(this, XGrafWorks.WIN_ICON);
         getContentPane().setLayout(new BorderLayout());
         statusPanel.setBorder(BorderFactory.createEtchedBorder());
         statusPanel.setLayout(new BorderLayout());
@@ -142,7 +142,7 @@ public abstract class GeneralFrame extends JFrame implements WindowListener {
         aboutButton.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //TODO: new AboutDialog();
+                new AboutDialog();
             }
         });
 

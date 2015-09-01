@@ -103,11 +103,11 @@ public class DbConnection {
     };
 
     public static String getLogin() {
-        return props.getProperty("dbUser", "aib");
+        return props.getProperty("dbUser", "root");
     }
 
     public static String getPassword() {
-        return props.getProperty("dbPassword", "qwerty");
+        return props.getProperty("dbPassword", "root");
     }
 
 //    public static String getBackupCommand() {
@@ -148,7 +148,7 @@ public class DbConnection {
                     props.getProperty("dbDriverName",
                     "com.mysql.jdbc.Driver")).newInstance());
             String connectionString = props.getProperty("JDBCconnection",
-                    "jdbc:mysql://localhost/bookstore?characterEncoding=UTF8");
+                    "jdbc:mysql://localhost/xgraf?characterEncoding=UTF8");
             String login = getLogin();
             String pwd = getPassword();
             connection = DriverManager.getConnection(

@@ -83,7 +83,7 @@ public class ConfigEditor extends PopupDialog {
         } catch (Exception ex) {
         }
         
-        XGrafWorks.setWindowIcon(this, "bs.png");
+        XGrafWorks.setWindowIcon(this, XGrafWorks.WIN_ICON);
         
 //        JComponent[] comps = (JComponent[]) getObject();
 //        imageDirField = (JTextField) comps[0];
