@@ -49,7 +49,7 @@ public class XGrafWorks {
     private static FileHandler fh;
     private static Properties props;
     private static final String APPNAME = "XGrafWorks";
-    private static final String SERVERNAME = "XGrafServer";
+    public static final String SERVERNAME = "XGrafServer";
     private static final String BSCLIENT_CONFIG = APPNAME + ".config";
     private static final String PROPERTYFILENAME = System.getProperty("user.home") + File.separatorChar + BSCLIENT_CONFIG;
     public static final String defaultServerIP = "localhost";
@@ -323,6 +323,10 @@ public class XGrafWorks {
             log(ex);
         }
         return new ComboItem[]{new ComboItem(0, "")};
+    }
+
+    public static ComboItem[] loadAllCompanies() {
+        return loadOnSelect("select company_id,name from company order by name");
     }
     
     public static List loadDistinct(String table, String column) {

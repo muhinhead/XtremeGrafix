@@ -2,31 +2,30 @@
 // generated file, so all hand editions will be overwritten
 package com.xgraf;
 
-import com.xgraf.RecordEditPanel;
+import com.xgraf.orm.Contact;
+import com.xgraf.orm.dbobject.ComboItem;
 import com.xgraf.orm.dbobject.DbObject;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
+import java.awt.BorderLayout;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-public class EditContactPanel extends RecordEditPanel {
+public class EditContactPanel extends EditPanelWithPhoto {
  
     public EditContactPanel(DbObject dbObject) {
         super(dbObject);
     }
 
 //column: contact_id type: INT class: java.lang.Integer
-    private JTextField contactIdField;
+    private JTextField idField;
 //column: name type: VARCHAR class: java.lang.String
     private JTextField nameField;
+    private JComboBox companyCB;
 //column: phone type: VARCHAR class: java.lang.String
     private JTextField phoneField;
 //column: email type: VARCHAR class: java.lang.String
@@ -34,22 +33,76 @@ public class EditContactPanel extends RecordEditPanel {
 //column: email1 type: VARCHAR class: java.lang.String
     private JTextField email1Field;
 //column: comments type: VARCHAR class: java.lang.String
-    private JTextField commentsField;
+    private JTextArea commentsField;
 
     @Override
     protected void fillContent() {
-        //TODO
+        String[] titles = {
+            "ID:",
+            "Name:",
+            "Company:",
+            "Phone(s):",
+            "E-mail" //second e-mail            
+        };
+        DefaultComboBoxModel companyCbModel = new DefaultComboBoxModel();
+        for (ComboItem ci : XGrafWorks.loadAllCompanies()) {
+            companyCbModel.addElement(ci);
+        }
+        JComponent[] edits = new JComponent[]{
+            getGridPanel(idField = new JTextField(), 4),
+            nameField = new JTextField(32),
+            comboPanelWithLookupBtn(companyCB = new JComboBox(companyCbModel), new CompanyLookupAction(companyCB)),
+            phoneField = new JTextField(),
+            getBorderPanel(new JComponent[]{
+                emailField = new JTextField(16),
+                new JLabel("second E-mail:", SwingConstants.RIGHT),
+                email1Field = new JTextField(16)
+            })
+        };
+        idField.setEnabled(false);
+        organizePanels(titles, edits, null);
+        
+        MyJideTabbedPane detailsTab = new MyJideTabbedPane();
+        JScrollPane sp;
+        detailsTab.add(sp = new JScrollPane(commentsField = new JTextArea(6, 40),
+                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), "Comments");
+        add(detailsTab, BorderLayout.CENTER);
     }
 
     @Override
     public void loadData() {
-        //TODO
+        Contact cont = (Contact) getDbObject();
+        if (cont != null) {
+            idField.setText(cont.getContactId().toString());
+            nameField.setText(cont.getName());
+            selectComboItem(companyCB, cont.getCompanyId());
+            phoneField.setText(cont.getPhone());
+            emailField.setText(cont.getEmail());
+            email1Field.setText(cont.getEmail1());
+            commentsField.setText(cont.getComments());
+            imageData = (byte[]) cont.getPhoto();
+            setImage(imageData);
+        }
+        setEnabledPictureControl(true);
     }
 
     @Override
     public boolean save() throws Exception {
-        //TODO
-        return true;
+        Contact cont = (Contact) getDbObject();
+        boolean isNew = cont==null;
+        if(isNew) {
+            cont = new Contact(null);
+            cont.setContactId(0);
+        }
+        cont.setName(nameField.getText());
+        cont.setCompanyId(getSelectedCbItem(companyCB));
+        cont.setPhone(phoneField.getText());
+        cont.setEmail(emailField.getText());
+        cont.setEmail1(email1Field.getText());
+        cont.setComments(commentsField.getText());
+        cont.setPhoto(imageData);
+        return saveDbRecord(cont, isNew);
     }
 }
 

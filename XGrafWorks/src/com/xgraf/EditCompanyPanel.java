@@ -15,7 +15,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-public class EditCompanyPanel extends RecordEditPanel {
+public class EditCompanyPanel extends EditPanelWithPhoto {
 
 //column: company_id type: INT class: java.lang.Integer
     private JTextField idField;
@@ -108,7 +108,10 @@ public class EditCompanyPanel extends RecordEditPanel {
             regNoField.setText(comp.getRegNo());
             vatNoField.setText(comp.getVatNo());
             commentsField.setText(comp.getComments());
+            imageData = (byte[]) comp.getLogo();
+            setImage(imageData);
         }
+        setEnabledPictureControl(true);
     }
 
     @Override
@@ -127,7 +130,12 @@ public class EditCompanyPanel extends RecordEditPanel {
         comp.setComments(commentsField.getText());
         comp.setRegNo(regNoField.getText());
         comp.setVatNo(vatNoField.getText());
-
+        comp.setLogo(imageData);
         return saveDbRecord(comp, isNew);
+    }
+    
+    @Override
+    protected String getImagePanelLabel() {
+        return "Logo";
     }
 }

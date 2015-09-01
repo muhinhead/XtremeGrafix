@@ -132,6 +132,7 @@ public abstract class EditPanelWithPhoto extends RecordEditPanel {
                 }
             });
         }
+        //picturePopMenu.setEnabled(true);
         return picturePopMenu;
     }
 

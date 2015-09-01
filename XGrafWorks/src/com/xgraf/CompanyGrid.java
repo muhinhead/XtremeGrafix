@@ -16,15 +16,14 @@ import javax.swing.JOptionPane;
 public class CompanyGrid extends GeneralGridPanel {
 
     public static final String SELECT = "Select "
-                                      + "company_id,"
-                                      + "name,"
-                                      + "street,"
-                                      + "area_pobox,"
-                                      + "city,"
-                                      + "postcode,"
-                                      + "reg_no,"
-                                      + "vat_no,"
-                                      + "comments from company";
+                                      + "company_id \"Id\","
+                                      + "name \"Company\","
+                                      + "street \"Address\","
+                                      + "area_pobox \"Address/PO box\","
+                                      + "city \"City\","
+                                      + "postcode \"Post code\","
+                                      + "reg_no \"Reg.No.\","
+                                      + "vat_no \"Vat.No.\" from company";
     private static HashMap<Integer, Integer> maxWidths = new HashMap<Integer, Integer>();
 
     static {
