@@ -17,6 +17,7 @@ create table user
     login varchar(16) not null,
     passwd varchar(32) not null,
     is_admin bit default 0,
+    photo       mediumblob,
     constraint user_pk primary key (user_id) 
 );
 
@@ -40,11 +41,13 @@ create table company
 create table contact
 (
     contact_id int not null auto_increment,
+    company_id int not null,
     name varchar(32) not null,
     phone varchar(32),
     email varchar(128),
     email1 varchar(128),
     comments text,
-    constraint contact_pk primary key (contact_id)
+    constraint contact_pk primary key (contact_id),
+    constraint contact_company_fk foreign key (company_id) references company (company_id) on delete cascade
 );
 
