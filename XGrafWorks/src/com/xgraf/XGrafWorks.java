@@ -7,6 +7,7 @@ package com.xgraf;
 
 import com.jidesoft.plaf.LookAndFeelFactory;
 import com.xgraf.orm.User;
+import com.xgraf.orm.dbobject.ComboItem;
 import com.xgraf.orm.dbobject.DbObject;
 import com.xgraf.remote.IMessageSender;
 import com.xgraf.rmi.DbConnection;
@@ -22,6 +23,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Vector;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -305,6 +307,33 @@ public class XGrafWorks {
         return null;
     }
 
+    private static ComboItem[] loadOnSelect(String select) {
+        try {
+            Vector[] tab = getExchanger().getTableBody(select);
+            Vector rows = tab[1];
+            ComboItem[] ans = new ComboItem[rows.size()];
+            for (int i = 0; i < rows.size(); i++) {
+                Vector line = (Vector) rows.get(i);
+                int id = Integer.parseInt(line.get(0).toString());
+                String tmvnr = line.get(1).toString();
+                ans[i] = new ComboItem(id, tmvnr);
+            }
+            return ans;
+        } catch (RemoteException ex) {
+            log(ex);
+        }
+        return new ComboItem[]{new ComboItem(0, "")};
+    }
+    
+    public static List loadDistinct(String table, String column) {
+        ComboItem[] itms = loadOnSelect("select 0,'' as "+column+" union select distinct 0,"+column+" from "+table+" order by "+column);
+        List lst = new ArrayList(itms.length);
+        for (ComboItem ci : itms) {
+            lst.add(ci.getValue());
+        }
+        return lst;
+    }
+        
     /**
      * @param args the command line arguments
      */

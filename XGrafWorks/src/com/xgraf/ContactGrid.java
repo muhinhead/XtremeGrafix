@@ -31,6 +31,10 @@ public class ContactGrid extends GeneralGridPanel {
         super(exchanger, SELECT, maxWidths, false);
     }
 
+    public ContactGrid(IMessageSender exchanger, Integer companyID) throws RemoteException {
+        super(exchanger, SELECT+" where company_id=" + companyID, maxWidths, false);
+    }
+
     public ContactGrid(IMessageSender exchanger, String select) throws RemoteException {
         super(exchanger, select, maxWidths, false);
     }

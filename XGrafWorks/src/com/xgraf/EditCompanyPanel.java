@@ -3,16 +3,14 @@
 package com.xgraf;
 
 import com.xgraf.RecordEditPanel;
+import com.xgraf.orm.Company;
 import com.xgraf.orm.dbobject.DbObject;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
+import com.xlend.util.Java2sAutoComboBox;
+import java.awt.BorderLayout;
+import java.rmi.RemoteException;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -20,15 +18,15 @@ import javax.swing.SwingConstants;
 public class EditCompanyPanel extends RecordEditPanel {
 
 //column: company_id type: INT class: java.lang.Integer
-    private JTextField companyIdField;
+    private JTextField idField;
 //column: name type: VARCHAR class: java.lang.String
-    private JTextField nameField;
+    private Java2sAutoComboBox companyNameCB;
 //column: street type: VARCHAR class: java.lang.String
-    private JTextField streetField;
+    private Java2sAutoComboBox streetCB;
 //column: area_pobox type: VARCHAR class: java.lang.String
-    private JTextField areaPoboxField;
+    private Java2sAutoComboBox areaPoboxCB;
 //column: city type: VARCHAR class: java.lang.String
-    private JTextField cityField;
+    private Java2sAutoComboBox cityCB;
 //column: postcode type: VARCHAR class: java.lang.String
     private JTextField postcodeField;
 //column: reg_no type: VARCHAR class: java.lang.String
@@ -36,7 +34,7 @@ public class EditCompanyPanel extends RecordEditPanel {
 //column: vat_no type: VARCHAR class: java.lang.String
     private JTextField vatNoField;
 //column: comments type: VARCHAR class: java.lang.String
-    private JTextField commentsField;
+    private JTextArea commentsField;
 
     public EditCompanyPanel(DbObject dbObject) {
         super(dbObject);
@@ -44,17 +42,92 @@ public class EditCompanyPanel extends RecordEditPanel {
 
     @Override
     protected void fillContent() {
-        //TODO
+        String[] titles = {
+            "ID:",
+            "Company Name:",
+            "Address:",
+            "Area / PO Box:",
+            "City:", //"Code:"
+            "Company Reg.No:" //"Company VAT No:"
+        };
+        JComponent[] edits = new JComponent[]{
+            getGridPanel(idField = new JTextField(), 4),
+            companyNameCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct("company","name")),
+            streetCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct("company","street")),
+            getGridPanel(areaPoboxCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct("company","area_pobox")), 2),
+            getGridPanel(new JComponent[]{
+                cityCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct("company","city")),
+                getGridPanel(new JComponent[]{
+                    new JLabel("Code:", SwingConstants.RIGHT),
+                    postcodeField = new JTextField(12)
+                })
+            }),
+            getBorderPanel(new JComponent[]{
+                regNoField = new JTextField(30),
+                new JLabel("Company VAT No:", SwingConstants.RIGHT),
+                vatNoField = new JTextField(30)
+            })
+        };
+        idField.setEnabled(false);
+        for (Java2sAutoComboBox acb : new Java2sAutoComboBox[]{
+            cityCB,streetCB,areaPoboxCB,companyNameCB
+        }) {
+            acb.setEditable(true);
+            acb.setStrict(false);        
+        }
+        organizePanels(titles, edits, null);
+
+        MyJideTabbedPane detailsTab = new MyJideTabbedPane();
+        if (getDbObject() != null) {
+            Company comp = (Company) getDbObject();
+            try {
+                detailsTab.add(new ContactGrid(XGrafWorks.getExchanger(), comp.getCompanyId()), "Contacts");
+            } catch (RemoteException ex) {
+                XGrafWorks.logAndShowMessage(ex);
+            }
+        } else {
+            detailsTab.add(new JLabel(" To add some contacts save first the company record"), "Contacts");
+        }
+        JScrollPane sp;
+        detailsTab.add(sp = new JScrollPane(commentsField = new JTextArea(6, 50),
+                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), "Comments");
+        add(detailsTab, BorderLayout.CENTER);
     }
 
     @Override
     public void loadData() {
-        //TODO
+        Company comp = (Company) getDbObject();
+        if (comp != null) {
+            idField.setText(comp.getCompanyId().toString());
+            companyNameCB.setSelectedItem(comp.getName());
+            streetCB.setSelectedItem(comp.getStreet());
+            areaPoboxCB.setSelectedItem(comp.getAreaPobox());
+            cityCB.setSelectedItem(comp.getCity());
+            postcodeField.setText(comp.getPostcode());
+            regNoField.setText(comp.getRegNo());
+            vatNoField.setText(comp.getVatNo());
+            commentsField.setText(comp.getComments());
+        }
     }
 
     @Override
     public boolean save() throws Exception {
-        //TODO
-        return true;
+        Company comp = (Company) getDbObject();
+        boolean isNew = comp == null;
+        if (isNew) {
+            comp = new Company(null);
+            comp.setCompanyId(0);
+        }
+        comp.setName((String) companyNameCB.getSelectedItem());
+        comp.setStreet((String) streetCB.getSelectedItem());
+        comp.setPostcode(postcodeField.getText());
+        comp.setAreaPobox((String) areaPoboxCB.getSelectedItem());
+        comp.setCity((String) cityCB.getSelectedItem());
+        comp.setComments(commentsField.getText());
+        comp.setRegNo(regNoField.getText());
+        comp.setVatNo(vatNoField.getText());
+
+        return saveDbRecord(comp, isNew);
     }
 }
