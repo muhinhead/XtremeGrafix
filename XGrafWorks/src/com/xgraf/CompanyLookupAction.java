@@ -8,6 +8,7 @@ package com.xgraf;
 import java.awt.event.ActionEvent;
 import java.rmi.RemoteException;
 import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 
 /**
@@ -16,21 +17,21 @@ import javax.swing.JComboBox;
  */
 class CompanyLookupAction extends AbstractAction {
 
-    private JComboBox supplierCB;
+    private JComboBox companyCB;
 
     public CompanyLookupAction(JComboBox cBox) {
-        super("...");
-        this.supplierCB = cBox;
+        super(null,new ImageIcon(XGrafWorks.loadImage("lookup.png", QuoteGrid.class)));
+        this.companyCB = cBox;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        showSupplierLookup();
+        showCompanyLookup();
     }
 
-    private void showSupplierLookup() {
+    private void showCompanyLookup() {
         try {
-            LookupDialog ld = new LookupDialog("Companies Lookup", supplierCB,
+            LookupDialog ld = new LookupDialog("Companies Lookup", companyCB,
                     new CompanyGrid(XGrafWorks.getExchanger()),
                     new String[]{"name", "street", "city", "reg_no","vat_no"});
         } catch (RemoteException ex) {

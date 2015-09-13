@@ -16,8 +16,6 @@ import java.awt.HeadlessException;
 import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
@@ -43,6 +41,8 @@ public class DashBoard extends JFrame {
     private ToolBarButton exitButton;
     private GeneralFrame adminsFrame;
     private GeneralFrame customersFrame;
+    private GeneralFrame documentsFrame;
+    private ToolBarButton reportsButton;
 
 //    protected class WinListener extends WindowAdapter {
 //
@@ -90,6 +90,8 @@ public class DashBoard extends JFrame {
         customersButton.setToolTipText("Customers list");
         documentsButton = new ToolBarButton("documents.png", true);
         documentsButton.setToolTipText("Quotes, Orders, Invoices");
+        reportsButton = new ToolBarButton("reports.png", true);
+        reportsButton.setToolTipText("Reports");
         setupButton = new ToolBarButton("setup.png", true);
         setupButton.setToolTipText("Users list & DB connection settings");
         exitButton = new ToolBarButton("shutdown.png", true);
@@ -99,7 +101,7 @@ public class DashBoard extends JFrame {
         int shift = 30;
         int yshift = 150;
 
-        ImagePanel img = new ImagePanel(XGrafWorks.loadImage(imgName, this));
+        ImagePanel img = new ImagePanel(XGrafWorks.loadImage(imgName, this.getClass()));
 
         customersButton.setBounds(shift, yshift, img.getWidth(), img.getHeight());
         main.add(customersButton);
@@ -107,6 +109,10 @@ public class DashBoard extends JFrame {
 
         documentsButton.setBounds(shift, yshift, img.getWidth(), img.getHeight());
         main.add(documentsButton);
+        shift += step;
+
+        reportsButton.setBounds(shift, yshift, img.getWidth(), img.getHeight());
+        main.add(reportsButton);
         shift += step;
 
         setupButton.setBounds(shift, yshift, img.getWidth(), img.getHeight());
@@ -118,11 +124,36 @@ public class DashBoard extends JFrame {
         exitButton.setBounds(shift, yshift, img.getWidth(), img.getHeight());
         main.add(exitButton);
 
+        documentsButton.addActionListener(new AbstractAction() {
+
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                if (documentsFrame == null) {
+                    documentsFrame = new DocumentsFrame(XGrafWorks.getExchanger());
+                } else {
+                    try {
+                        documentsFrame.setLookAndFeel(XGrafWorks.readProperty("LookAndFeel",
+                                UIManager.getSystemLookAndFeelClassName()));
+                    } catch (Exception ex) {
+                    }
+                    documentsFrame.setVisible(true);
+                }
+            }
+        });
+        
+        reportsButton.addActionListener(new AbstractAction() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                GeneralFrame.notImplementedYet();
+            }
+        });
+
         customersButton.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 if (customersFrame == null) {
-                    customersFrame = new CustomersFrame(XGrafWorks.getExchanger());//new CompanyGrid(XGrafWorks.getExchanger());
+                    customersFrame = new CustomersFrame(XGrafWorks.getExchanger());
                 } else {
                     try {
                         customersFrame.setLookAndFeel(XGrafWorks.readProperty("LookAndFeel",
@@ -174,7 +205,7 @@ public class DashBoard extends JFrame {
         main = new TexturedPanel(getBackGroundImage());
         controlsPanel.add(main, BorderLayout.CENTER);
         addNotify();
-        ImagePanel img = new ImagePanel(XGrafWorks.loadImage(getBackGroundImage(), this));
+        ImagePanel img = new ImagePanel(XGrafWorks.loadImage(getBackGroundImage(), this.getClass()));
         Insets insets = getInsets();
         dashWidth = img.getWidth();
         dashHeight = img.getHeight();

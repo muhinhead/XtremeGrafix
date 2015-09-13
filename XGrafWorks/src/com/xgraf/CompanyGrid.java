@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 public class CompanyGrid extends GeneralGridPanel {
@@ -32,6 +33,7 @@ public class CompanyGrid extends GeneralGridPanel {
 
     public CompanyGrid(IMessageSender exchanger) throws RemoteException {
         super(exchanger, SELECT, maxWidths, false);
+        setFont(null);
     }
 
     public CompanyGrid(IMessageSender exchanger, String select) throws RemoteException {
@@ -44,7 +46,7 @@ public class CompanyGrid extends GeneralGridPanel {
 
     @Override
     protected AbstractAction addAction() {
-        return new AbstractAction("Add record") {
+        return new AbstractAction("Add",new ImageIcon(XGrafWorks.loadImage("newdocument.png", CompanyGrid.class))) {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 EditCompanyDialog ed = new EditCompanyDialog("Add Company", null);
@@ -58,7 +60,7 @@ public class CompanyGrid extends GeneralGridPanel {
 
     @Override
     protected AbstractAction editAction() {
-        return new AbstractAction("Edit") {
+        return new AbstractAction("Edit",new ImageIcon(XGrafWorks.loadImage("edit.png", CompanyGrid.class))) {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 int id = getSelectedID();
@@ -79,7 +81,7 @@ public class CompanyGrid extends GeneralGridPanel {
 
     @Override
     protected AbstractAction delAction() {
-        return new AbstractAction("Delete") {
+        return new AbstractAction("Delete",new ImageIcon(XGrafWorks.loadImage("trash.png", CompanyGrid.class))) {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 int id = getSelectedID();

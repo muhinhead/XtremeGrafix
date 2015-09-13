@@ -15,7 +15,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-public class EditCompanyPanel extends EditPanelWithPhoto {
+public class EditCompanyPanel extends RecordEditPanel {
 
 //column: company_id type: INT class: java.lang.Integer
     private JTextField idField;
@@ -52,11 +52,11 @@ public class EditCompanyPanel extends EditPanelWithPhoto {
         };
         JComponent[] edits = new JComponent[]{
             getGridPanel(idField = new JTextField(), 4),
-            companyNameCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct("company","name")),
-            streetCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct("company","street")),
-            getGridPanel(areaPoboxCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct("company","area_pobox")), 2),
+            companyNameCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct("company", "name")),
+            streetCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct("company", "street")),
+            getGridPanel(areaPoboxCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct("company", "area_pobox")), 2),
             getGridPanel(new JComponent[]{
-                cityCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct("company","city")),
+                cityCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct("company", "city")),
                 getGridPanel(new JComponent[]{
                     new JLabel("Code:", SwingConstants.RIGHT),
                     postcodeField = new JTextField(12)
@@ -70,10 +70,10 @@ public class EditCompanyPanel extends EditPanelWithPhoto {
         };
         idField.setEnabled(false);
         for (Java2sAutoComboBox acb : new Java2sAutoComboBox[]{
-            cityCB,streetCB,areaPoboxCB,companyNameCB
+            cityCB, streetCB, areaPoboxCB, companyNameCB
         }) {
             acb.setEditable(true);
-            acb.setStrict(false);        
+            acb.setStrict(false);
         }
         organizePanels(titles, edits, null);
 
@@ -108,10 +108,10 @@ public class EditCompanyPanel extends EditPanelWithPhoto {
             regNoField.setText(comp.getRegNo());
             vatNoField.setText(comp.getVatNo());
             commentsField.setText(comp.getComments());
-            imageData = (byte[]) comp.getLogo();
-            setImage(imageData);
+//            imageData = (byte[]) comp.getLogo();
+//            setImage(imageData);
         }
-        setEnabledPictureControl(true);
+//        setEnabledPictureControl(true);
     }
 
     @Override
@@ -130,12 +130,12 @@ public class EditCompanyPanel extends EditPanelWithPhoto {
         comp.setComments(commentsField.getText());
         comp.setRegNo(regNoField.getText());
         comp.setVatNo(vatNoField.getText());
-        comp.setLogo(imageData);
+//        comp.setLogo(imageData);
         return saveDbRecord(comp, isNew);
     }
-    
-    @Override
-    protected String getImagePanelLabel() {
-        return "Logo";
-    }
+
+//    @Override
+//    protected String getImagePanelLabel() {
+//        return "Logo";
+//    }
 }

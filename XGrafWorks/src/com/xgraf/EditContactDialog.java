@@ -7,6 +7,7 @@ import com.xgraf.orm.Contact;
 
 public class EditContactDialog extends EditRecordDialog {
 
+    public static Integer companyID = null;
     public static boolean okPressed;
     public EditContactDialog(String title, Contact rec) {
         super(title, rec);

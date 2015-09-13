@@ -93,7 +93,7 @@ public class LoginImagedDialog extends PopupDialog {
         controlsPanel = new JPanel(new BorderLayout());
         JPanel main = new TexturedPanel(BACKGROUNDIMAGE);
         controlsPanel.add(main, BorderLayout.CENTER);
-        ImagePanel img = new ImagePanel(XGrafWorks.loadImage(BACKGROUNDIMAGE, this));
+        ImagePanel img = new ImagePanel(XGrafWorks.loadImage(BACKGROUNDIMAGE, this.getClass()));
         addNotify();
         Insets insets = getInsets();
         int dashWidth = img.getWidth();
@@ -115,7 +115,7 @@ public class LoginImagedDialog extends PopupDialog {
         main.add(pwdField);
 
         JButton okButton = new ToolBarButton(LOCKIMAGE);
-        img = new ImagePanel(XGrafWorks.loadImage(LOCKIMAGE, this));
+        img = new ImagePanel(XGrafWorks.loadImage(LOCKIMAGE, this.getClass()));
 
         okButton.setBounds(dashWidth - img.getWidth() - xShift, dashHeight - img.getHeight() - yShift,
                 img.getWidth(), img.getHeight());

@@ -6,9 +6,11 @@ package com.xgraf;
 
 import com.xgraf.orm.User;
 import com.xgraf.remote.IMessageSender;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.rmi.RemoteException;
 import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 /**
@@ -28,7 +30,7 @@ public class UsersGrid extends GeneralGridPanel {
     @Override
     protected AbstractAction addAction() {
         if (XGrafWorks.getCurrentUser().getIsAdmin() != null && XGrafWorks.getCurrentUser().getIsAdmin().intValue() == 1) {
-            return new AbstractAction("Add User") {
+            return new AbstractAction("Add",new ImageIcon(XGrafWorks.loadImage("newuser.png", UsersGrid.class))) {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     EditUserDialog ed = new EditUserDialog("New User", null);
@@ -45,7 +47,7 @@ public class UsersGrid extends GeneralGridPanel {
 
     @Override
     protected AbstractAction editAction() {
-        return new AbstractAction("Edit") {
+        return new AbstractAction("Edit",new ImageIcon(XGrafWorks.loadImage("edituser.png", UsersGrid.class))) {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 int id = getSelectedID();
@@ -67,7 +69,7 @@ public class UsersGrid extends GeneralGridPanel {
     @Override
     protected AbstractAction delAction() {
         if (XGrafWorks.getCurrentUser().getIsAdmin() != null && XGrafWorks.getCurrentUser().getIsAdmin().intValue() == 1) {
-            return new AbstractAction("Delete") {
+            return new AbstractAction("Delete",new ImageIcon(XGrafWorks.loadImage("deluser.png", UsersGrid.class))) {
                 @Override
                 public void actionPerformed(ActionEvent ae) {
                     int id = getSelectedID();

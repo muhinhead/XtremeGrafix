@@ -10,6 +10,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -49,8 +50,8 @@ public abstract class EditRecordDialog extends PopupDialog {
         btnPanel.add(cancelButton = new JButton(cancelAction = getCancelAction()));
 
 //        applyButton.setToolTipText("Apply changes to database");
-        saveButton.setToolTipText("Save changes and close dialog");
-        cancelButton.setToolTipText("Discard changes and close dialog");
+        saveButton.setToolTipText("Save changes and close the dialog");
+        cancelButton.setToolTipText("Discard changes and close the dialog");
 
 //        getContentPane().add(new JPanel(), BorderLayout.WEST);
 //        getContentPane().add(new JPanel(), BorderLayout.EAST);
@@ -101,7 +102,7 @@ public abstract class EditRecordDialog extends PopupDialog {
 //        };
 //    }
     protected AbstractAction getSaveAction() {
-        return new AbstractAction("Save") {
+        return new AbstractAction("Save",new ImageIcon(XGrafWorks.loadImage("ok.png", EditRecordDialog.class))) {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -120,7 +121,7 @@ public abstract class EditRecordDialog extends PopupDialog {
     }
 
     protected AbstractAction getCancelAction() {
-        return new AbstractAction("Cancel") {
+        return new AbstractAction("Cancel",new ImageIcon(XGrafWorks.loadImage("cancel.png", EditRecordDialog.class))) {
             @Override
             public void actionPerformed(ActionEvent e) {
                 dispose();

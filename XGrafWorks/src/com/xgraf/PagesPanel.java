@@ -113,7 +113,7 @@ public abstract class PagesPanel extends JPanel {
     }
 
     protected void reloadPages() throws RemoteException {
-        Image ic = XGrafWorks.loadImage("newdoc.png", DashBoard.ourInstance);
+        Image ic = XGrafWorks.loadImage("newdoc.png", DashBoard.ourInstance.getClass());
         NoFrameButton btn = new NoFrameButton(new ImageIcon(ic));
         btn.setText("Add");
         btn.setToolTipText("Attach document(s)");
@@ -124,7 +124,7 @@ public abstract class PagesPanel extends JPanel {
     protected static Image getImageOnExtension(IPage page) {
         String extension = page.getFileextension() == null ? "" : page.getFileextension().toLowerCase();
         String iconFile = imagemap.get(extension);
-        return XGrafWorks.loadImage(iconFile == null ? "page.png" : iconFile, DashBoard.ourInstance);
+        return XGrafWorks.loadImage(iconFile == null ? "page.png" : iconFile, DashBoard.ourInstance.getClass());
     }
 
     protected abstract void processFiles(File[] files)

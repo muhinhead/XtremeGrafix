@@ -16,7 +16,9 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 public class EditContactPanel extends EditPanelWithPhoto {
- 
+
+    private CompanyLookupAction compLA;
+
     public EditContactPanel(DbObject dbObject) {
         super(dbObject);
     }
@@ -51,7 +53,7 @@ public class EditContactPanel extends EditPanelWithPhoto {
         JComponent[] edits = new JComponent[]{
             getGridPanel(idField = new JTextField(), 4),
             nameField = new JTextField(32),
-            comboPanelWithLookupBtn(companyCB = new JComboBox(companyCbModel), new CompanyLookupAction(companyCB)),
+            comboPanelWithLookupBtn(companyCB = new JComboBox(companyCbModel), compLA = new CompanyLookupAction(companyCB)),
             phoneField = new JTextField(),
             getBorderPanel(new JComponent[]{
                 emailField = new JTextField(16),
@@ -61,13 +63,15 @@ public class EditContactPanel extends EditPanelWithPhoto {
         };
         idField.setEnabled(false);
         organizePanels(titles, edits, null);
-        
+
         MyJideTabbedPane detailsTab = new MyJideTabbedPane();
         JScrollPane sp;
         detailsTab.add(sp = new JScrollPane(commentsField = new JTextArea(6, 40),
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), "Comments");
         add(detailsTab, BorderLayout.CENTER);
+        compLA.setEnabled(EditContactDialog.companyID == null);
+        companyCB.setEnabled(EditContactDialog.companyID == null);
     }
 
     @Override
@@ -83,6 +87,8 @@ public class EditContactPanel extends EditPanelWithPhoto {
             commentsField.setText(cont.getComments());
             imageData = (byte[]) cont.getPhoto();
             setImage(imageData);
+        } else {
+            selectComboItem(companyCB, EditContactDialog.companyID);
         }
         setEnabledPictureControl(true);
     }
@@ -90,8 +96,8 @@ public class EditContactPanel extends EditPanelWithPhoto {
     @Override
     public boolean save() throws Exception {
         Contact cont = (Contact) getDbObject();
-        boolean isNew = cont==null;
-        if(isNew) {
+        boolean isNew = cont == null;
+        if (isNew) {
             cont = new Contact(null);
             cont.setContactId(0);
         }
@@ -105,4 +111,3 @@ public class EditContactPanel extends EditPanelWithPhoto {
         return saveDbRecord(cont, isNew);
     }
 }
-

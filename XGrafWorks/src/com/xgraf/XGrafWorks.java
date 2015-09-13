@@ -13,6 +13,7 @@ import com.xgraf.remote.IMessageSender;
 import com.xgraf.rmi.DbConnection;
 import com.xgraf.rmi.ExchangeFactory;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Image;
 import java.awt.Window;
 import java.io.File;
@@ -37,6 +38,8 @@ import javax.swing.JPasswordField;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.UIManager;
+import javax.swing.plaf.FontUIResource;
 
 /**
  *
@@ -134,7 +137,7 @@ public class XGrafWorks {
         logger.log(Level.SEVERE, msg, th);
     }
 
-    public static Image loadImage(String iconName, Window w) {
+    public static Image loadImage(String iconName, Class cls) {
         Image im = null;
         File f = new File("images/" + iconName);
         if (f.exists()) {
@@ -146,7 +149,7 @@ public class XGrafWorks {
             }
         } else {
             try {
-                im = ImageIO.read(w.getClass().getResourceAsStream("/" + iconName));
+                im = ImageIO.read(cls.getResourceAsStream("/" + iconName));
             } catch (Exception ie) {
                 log(ie);
             }
@@ -232,7 +235,7 @@ public class XGrafWorks {
     }
 
     public static void setWindowIcon(Window w, String iconName) {
-        w.setIconImage(loadImage(iconName, w));
+        w.setIconImage(loadImage(iconName, w.getClass()));
     }
 
     /**
@@ -328,16 +331,16 @@ public class XGrafWorks {
     public static ComboItem[] loadAllCompanies() {
         return loadOnSelect("select company_id,name from company order by name");
     }
-    
+
     public static List loadDistinct(String table, String column) {
-        ComboItem[] itms = loadOnSelect("select 0,'' as "+column+" union select distinct 0,"+column+" from "+table+" order by "+column);
+        ComboItem[] itms = loadOnSelect("select 0,'' as " + column + " union select distinct 0," + column + " from " + table + " order by " + column);
         List lst = new ArrayList(itms.length);
         for (ComboItem ci : itms) {
             lst.add(ci.getValue());
         }
         return lst;
     }
-        
+
     /**
      * @param args the command line arguments
      */

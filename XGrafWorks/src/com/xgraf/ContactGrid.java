@@ -2,25 +2,24 @@
 // generated file, so all hand editions will be overwritten
 package com.xgraf;
 
-import com.xgraf.GeneralFrame;
-import com.xgraf.GeneralGridPanel;
 import com.xgraf.orm.Contact;
 import com.xgraf.remote.IMessageSender;
 import java.awt.event.ActionEvent;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 public class ContactGrid extends GeneralGridPanel {
 
+    private static final String WHERE_COMPID = " where company_id=";
     public static final String SELECT = "Select "
-                                      + "contact_id,"
-                                      + "name,"
-                                      + "phone,"
-                                      + "email,"
-                                      + "email1,"
-                                      + "comments from contact";
+            + "contact_id \"Id\","
+            + "name \"Name\","
+            + "phone \"Phone\","
+            + "email \"E-mail first\","
+            + "email1\"E-mail second\" from contact";
     private static HashMap<Integer, Integer> maxWidths = new HashMap<Integer, Integer>();
 
     static {
@@ -32,22 +31,27 @@ public class ContactGrid extends GeneralGridPanel {
     }
 
     public ContactGrid(IMessageSender exchanger, Integer companyID) throws RemoteException {
-        super(exchanger, SELECT+" where company_id=" + companyID, maxWidths, false);
+        super(exchanger, SELECT + WHERE_COMPID + companyID, maxWidths, false);
     }
 
     public ContactGrid(IMessageSender exchanger, String select) throws RemoteException {
-        super(exchanger, select, maxWidths, false);
+        super(exchanger, select, maxWidths, false && (EditContactDialog.companyID = null) == null);
     }
 
-    public ContactGrid(IMessageSender exchanger,String select, boolean readOnly) throws RemoteException {
-        super(exchanger, select, maxWidths, readOnly);
+    private Integer getParentCompanyID() {
+        int pos = getSelect().indexOf(WHERE_COMPID);
+        if (pos > 0) {
+            return new Integer(getSelect().substring(pos + WHERE_COMPID.length()));
+        }
+        return null;
     }
 
     @Override
     protected AbstractAction addAction() {
-        return new AbstractAction("Add record") {
+        return new AbstractAction("Add", new ImageIcon(XGrafWorks.loadImage("newcontact.png", UsersGrid.class))) {
             @Override
             public void actionPerformed(ActionEvent ae) {
+                EditContactDialog.companyID = getParentCompanyID();
                 EditContactDialog ed = new EditContactDialog("Add Contact", null);
                 if (EditContactDialog.okPressed) {
                     Contact rec = (Contact) ed.getEditPanel().getDbObject();
@@ -59,13 +63,14 @@ public class ContactGrid extends GeneralGridPanel {
 
     @Override
     protected AbstractAction editAction() {
-        return new AbstractAction("Edit") {
+        return new AbstractAction("Edit", new ImageIcon(XGrafWorks.loadImage("editcontact.png", UsersGrid.class))) {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 int id = getSelectedID();
                 if (id != 0) {
                     try {
                         Contact contact = (Contact) exchanger.loadDbObjectOnID(Contact.class, id);
+                        EditContactDialog.companyID = getParentCompanyID();
                         new EditContactDialog("Edit record", contact);
                         if (EditContactDialog.okPressed) {
                             refresh();
@@ -80,7 +85,7 @@ public class ContactGrid extends GeneralGridPanel {
 
     @Override
     protected AbstractAction delAction() {
-        return new AbstractAction("Delete") {
+        return new AbstractAction("Delete", new ImageIcon(XGrafWorks.loadImage("delcontact.png", UsersGrid.class))) {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 int id = getSelectedID();
@@ -99,4 +104,3 @@ public class ContactGrid extends GeneralGridPanel {
         };
     }
 }
-
