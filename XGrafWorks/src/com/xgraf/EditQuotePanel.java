@@ -5,6 +5,7 @@ package com.xgraf;
 import com.xgraf.orm.Company;
 import com.xgraf.orm.Contact;
 import com.xgraf.orm.Quote;
+import com.xgraf.orm.Quoteitem;
 import com.xgraf.orm.dbobject.ComboItem;
 import com.xgraf.orm.dbobject.DbObject;
 import com.xlend.util.Java2sAutoComboBox;
@@ -18,6 +19,8 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.rmi.RemoteException;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
@@ -35,7 +38,6 @@ public class EditQuotePanel extends RecordEditPanel {
     private JTextField idField;
     private JTextField quoteOrderNoField;
     private SelectedDateSpinner dateSP;
-    private CompanyLookupAction compLA;
     private JComboBox companyCB;
     private JTextField companyAddressField;
     private Java2sAutoComboBox serviceTypeCB;
@@ -44,7 +46,6 @@ public class EditQuotePanel extends RecordEditPanel {
     private JTextField contactEmailField;
     private DefaultComboBoxModel contactCbModel;
     private DefaultComboBoxModel companyCbModel;
-    private ContactLookupAction contLA;
     private JTextField bankAccHolderField;
     private JTextField bankField;
     private JTextField bankAccNoField;
@@ -55,6 +56,7 @@ public class EditQuotePanel extends RecordEditPanel {
     private SelectedNumberSpinner refDepositPercentSP;
     private SelectedNumberSpinner outBalanceWeeksSP;
     private Java2sAutoComboBox prefPayMethodCB;
+    private JLabel totalLabel;
 
     public EditQuotePanel(DbObject dbObject) {
         super(dbObject);
@@ -75,12 +77,14 @@ public class EditQuotePanel extends RecordEditPanel {
             "Branch Code:",
             "Account No:",
             "Account Type:",
-            "<html><b>Terms </b></html>",
+            "<html><b>Terms & </b></html>",
             "Quotes valid until:",
             "Deposit required to confirm an order,%:",
             "A refundable breakage deposit,%:",
             "Outstanding balance is payable prior to event, weeks:",
-            "Preferred method of payment:"
+            "Preferred method of payment:",
+            "",
+            "<html><b>TOTAL   :</b></html>"
         };
         JLabel dtlLbl;
         JLabel termsLbl;
@@ -98,7 +102,7 @@ public class EditQuotePanel extends RecordEditPanel {
             getGridPanel(bankBranchCodeField = new JTextField(), 3),
             getGridPanel(bankAccNoField = new JTextField(), 3),
             bankAccTypeCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct("quote", "bank_acc_type")),
-            termsLbl = new JLabel("& Conditions"),
+            termsLbl = new JLabel("Conditions"),
             getBorderPanel(new JComponent[]{
                 validDateSP = new SelectedDateSpinner(),
                 new JPanel(), new JPanel()
@@ -115,7 +119,9 @@ public class EditQuotePanel extends RecordEditPanel {
                 outBalanceWeeksSP = new SelectedNumberSpinner(3, 0, 52, 1),
                 new JPanel(), new JPanel()
             }),
-            prefPayMethodCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct("quote", "pref_pay_method"))
+            prefPayMethodCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct("quote", "pref_pay_method")),
+            new JPanel(),
+            totalLabel = new JLabel("0.0")
         };
         Font font = dtlLbl.getFont();
         dtlLbl.setFont(new Font(font.getFontName(), Font.BOLD, font.getSize()));
@@ -139,7 +145,7 @@ public class EditQuotePanel extends RecordEditPanel {
             Quote q = (Quote) getDbObject();
             try {
                 QuoteitemGrid itmGrid;
-                detailsTab.add(itmGrid = new QuoteitemGrid(XGrafWorks.getExchanger(), q.getQuoteId()), "Items");
+                detailsTab.add(itmGrid = new QuoteitemGrid(XGrafWorks.getExchanger(), q.getQuoteId(), this), "Items");
                 itmGrid.setPreferredSize(new Dimension(itmGrid.getPreferredSize().width, 300));
             } catch (RemoteException ex) {
                 XGrafWorks.logAndShowMessage(ex);
@@ -181,11 +187,11 @@ public class EditQuotePanel extends RecordEditPanel {
         contactCbModel = new DefaultComboBoxModel();
 
         upEditPanel.add(comboPanelWithLookupBtn(
-                companyCB = new JComboBox(companyCbModel), compLA = new CompanyLookupAction(companyCB, contactCbModel))
+                companyCB = new JComboBox(companyCbModel), new CompanyLookupAction(companyCB, contactCbModel))
         );
         upEditPanel.add(companyAddressField = new JTextField(30));
         upEditPanel.add(comboPanelWithLookupBtn(contactPersonCB = new JComboBox(contactCbModel),
-                contLA = new ContactLookupAction(contactPersonCB, companyCB)));
+                new ContactLookupAction(contactPersonCB, companyCB)));
         upEditPanel.add(contactPhoneField = new JTextField());
         upEditPanel.add(contactEmailField = new JTextField());
         upEditPanel.add(serviceTypeCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct("quote", "service_type")));
@@ -240,10 +246,9 @@ public class EditQuotePanel extends RecordEditPanel {
     }
 
     @Override
-
     public void loadData() {
         Quote q = (Quote) getDbObject();
-        if (q!=null) {
+        if (q != null) {
             idField.setText(q.getQuoteId().toString());
             quoteRefField.setText(q.getQuoteRef());
             quoteOrderNoField.setText(q.getOrderNo());
@@ -262,13 +267,30 @@ public class EditQuotePanel extends RecordEditPanel {
             refDepositPercentSP.setValue(q.getRefundBreakPercent());
             outBalanceWeeksSP.setValue(q.getOutbalanceWeeks());
             prefPayMethodCB.setSelectedItem(q.getPrefPayMethod());
+            recalcTotal(q.getQuoteId());
         }
     }
 
+    public void recalcTotal(Integer quoteID) {
+        double total = 0.0;
+        try {
+            DbObject[] obs = XGrafWorks.getExchanger().getDbObjects(Quoteitem.class, "quote_id=" + quoteID, null);
+            for (DbObject ob : obs) {
+                Quoteitem itm = (Quoteitem) ob;
+                total += (itm.getQty() * itm.getUnitPrice());
+            }
+        } catch (RemoteException ex) {
+            XGrafWorks.logAndShowMessage(ex);
+        }
+        totalLabel.setText("R" + total);
+    }
+
+    
+    
     @Override
     public boolean save() throws Exception {
         Quote q = (Quote) getDbObject();
-        boolean isNew = (q==null);
+        boolean isNew = (q == null);
         if (isNew) {
             q = new Quote(null);
             q.setQuoteId(0);

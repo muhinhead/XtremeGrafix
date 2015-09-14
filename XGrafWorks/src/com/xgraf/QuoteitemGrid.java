@@ -17,16 +17,19 @@ public class QuoteitemGrid extends GeneralGridPanel {
             + "quoteitem_id \"Id\","
             + "descr \"Description\","
             + "qty \"Qty\","
-            + "concat('R',unit_price) \"Unit Price\" "
+            + "concat('R',unit_price) \"Unit Price\","
+            + "concat('R',qty*unit_price) \"Line Total\" "
             + "from quoteitem ";
     private static HashMap<Integer, Integer> maxWidths = new HashMap<Integer, Integer>();
 
     static {
         maxWidths.put(0, 40);
     }
+    private final EditQuotePanel papaPanel;
 
-    public QuoteitemGrid(IMessageSender exchanger, Integer quoteID) throws RemoteException {
+    public QuoteitemGrid(IMessageSender exchanger, Integer quoteID, EditQuotePanel papaPanel) throws RemoteException {
         super(exchanger, SELECT + WHERE_COND + quoteID.toString(), maxWidths, false);
+        this.papaPanel = papaPanel;
     }
 
     private Integer getParentQuoteID() {
@@ -35,6 +38,18 @@ public class QuoteitemGrid extends GeneralGridPanel {
             return new Integer(getSelect().substring(pos + WHERE_COND.length()));
         }
         return null;
+    }
+    
+    @Override
+    public void refresh() {
+        super.refresh();
+        papaPanel.recalcTotal(getParentQuoteID());
+    }
+    
+    @Override
+    public void refresh(int id) {
+        super.refresh(id);
+        papaPanel.recalcTotal(getParentQuoteID());
     }
     
     @Override

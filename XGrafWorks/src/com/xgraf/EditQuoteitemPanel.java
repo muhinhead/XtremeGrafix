@@ -2,12 +2,9 @@
 // generated file, so all hand editions will be overwritten
 package com.xgraf;
 
-import com.xgraf.RecordEditPanel;
-import static com.xgraf.RecordEditPanel.getGridPanel;
 import com.xgraf.orm.Quoteitem;
 import com.xgraf.orm.dbobject.DbObject;
 import com.xlend.util.SelectedNumberSpinner;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
@@ -20,15 +17,9 @@ public class EditQuoteitemPanel extends RecordEditPanel {
         super(dbObject);
     }
 
-//column: quoteitem_id type: INT class: java.lang.Integer
     private JTextField idField;
-//column: quote_id type: INT class: java.lang.Integer
-//    private JComboBox quoteIdComboBox;
-//column: descr type: VARCHAR class: java.lang.String
     private JTextField descrField;
-//column: qty type: INT class: java.lang.Integer
     private SelectedNumberSpinner qtyNumberSpinner;
-//column: unit_price type: DECIMAL class: java.math.BigDecimal
 
     @Override
     protected void fillContent() {
