@@ -332,6 +332,11 @@ public class XGrafWorks {
         return loadOnSelect("select company_id,name from company order by name");
     }
 
+    public static ComboItem[] loadContactsOnCompany(Integer compamnyID) {
+        return loadOnSelect("select contact_id,name from contact where company_id=" 
+                + compamnyID.toString() + " order by name");
+    }
+
     public static List loadDistinct(String table, String column) {
         ComboItem[] itms = loadOnSelect("select 0,'' as " + column + " union select distinct 0," + column + " from " + table + " order by " + column);
         List lst = new ArrayList(itms.length);

@@ -71,8 +71,8 @@ public class DbConnection {
             }
         }
     }
-    private static final int DB_VERSION_ID = 1;
-    public static final String DB_VERSION = "0.1";
+    private static final int DB_VERSION_ID = 2;
+    public static final String DB_VERSION = "0.2";
     private static boolean isFirstTime = true;
     private static Properties props = new Properties();
     private static String[] createLocalDBsqls = loadDDLscript("crebas.sql", ";");
@@ -80,7 +80,41 @@ public class DbConnection {
     private static String[] fixLocalDBsqls = new String[]{
         "update dbversion set version_id = " + DB_VERSION_ID + ",version = '" + DB_VERSION + "'",
         "alter table contact add photo mediumblob",
-        "alter table company add logo mediumblob"
+        "alter table company add logo mediumblob",
+        "create table quote ("
+        + "    quote_id int not null auto_increment,"
+        + "    company_id int not null,"
+        + "    contact_id int not null,"
+        + "    service_type varchar(32),"
+        + "    quote_ref varchar(32) not null,"
+        + "    order_no varchar(16),"
+        + "    quote_date date not null,"
+        + "    is_proforma bit default 0,"
+        + "    sub_total decimal (10,2),"
+        + "    bank_acc_holder varchar(64),"
+        + "    bank varchar(64),"
+        + "    bank_branch_code varchar(32),"
+        + "    bank_acc_no varchar(32),"
+        + "    bank_acc_type varchar(16),"
+        + "    valid_term date,"
+        + "    deposit_percent tinyint,"
+        + "    refund_break_percent tinyint,"
+        + "    outbalance_weeks tinyint,"
+        + "    pref_pay_method varchar(32),"
+        + "    add_conditions varchar(128),"
+        + "    constraint quote_pk primary key (quote_id),"
+        + "    constraint quote_company_fk foreign key (company_id) references company (company_id),"
+        + "    constraint quote_contact_fk foreign key (contact_id) references contact (contact_id)"
+        + ")",
+        "create table quoteitem ("
+        + "    quoteitem_id int not null auto_increment,"
+        + "    quote_id int not null,"
+        + "    descr varchar(512) not null,"
+        + "    qty int not null,"
+        + "    unit_price decimal (8,2) not null,"
+        + "    constraint quoteitem_pk primary key (quoteitem_id),"
+        + "    constraint quoteitem_quote_fk foreign key (quote_id) references quote (quote_id) on delete cascade"
+        + ")"
     };
 
     public static String getLogin() {
@@ -126,8 +160,8 @@ public class DbConnection {
             Locale.setDefault(Locale.ENGLISH);
             DriverManager.registerDriver(
                     (java.sql.Driver) Class.forName(
-                    props.getProperty("dbDriverName",
-                    "com.mysql.jdbc.Driver")).newInstance());
+                            props.getProperty("dbDriverName",
+                                    "com.mysql.jdbc.Driver")).newInstance());
             String connectionString = props.getProperty("JDBCconnection",
                     "jdbc:mysql://localhost/xgraf?characterEncoding=UTF8");
             String login = getLogin();
@@ -136,6 +170,7 @@ public class DbConnection {
                     connectionString,
                     login, pwd);
             connection.setAutoCommit(true);
+            sqlBatch(fixLocalDBsqls, connection, false);
 //            RmiMessageSender.isMySQL = (connection.getClass().getCanonicalName().indexOf("mysql") > -1);
 //            System.out.println("!!! "+connection.hashCode()+" - NEW CONNECTION");
         } catch (Exception e) {

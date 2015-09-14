@@ -5,9 +5,11 @@
  */
 package com.xgraf;
 
+import com.xgraf.orm.dbobject.ComboItem;
 import java.awt.event.ActionEvent;
 import java.rmi.RemoteException;
 import javax.swing.AbstractAction;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 
@@ -18,10 +20,12 @@ import javax.swing.JComboBox;
 class CompanyLookupAction extends AbstractAction {
 
     private JComboBox companyCB;
-
-    public CompanyLookupAction(JComboBox cBox) {
-        super(null,new ImageIcon(XGrafWorks.loadImage("lookup.png", QuoteGrid.class)));
+    private DefaultComboBoxModel dependentContacts;
+    
+    public CompanyLookupAction(JComboBox cBox,DefaultComboBoxModel dependentContacts) {
+        super(null,new ImageIcon(XGrafWorks.loadImage("lookup.png", CompanyLookupAction.class)));
         this.companyCB = cBox;
+        this.dependentContacts = dependentContacts;
     }
 
     @Override
@@ -34,6 +38,12 @@ class CompanyLookupAction extends AbstractAction {
             LookupDialog ld = new LookupDialog("Companies Lookup", companyCB,
                     new CompanyGrid(XGrafWorks.getExchanger()),
                     new String[]{"name", "street", "city", "reg_no","vat_no"});
+            if(dependentContacts!=null) {
+                dependentContacts.removeAllElements();
+                for (ComboItem ci : XGrafWorks.loadContactsOnCompany(ld.getChoosed())) {
+                    dependentContacts.addElement(ci);
+                }
+            }
         } catch (RemoteException ex) {
             GeneralFrame.errMessageBox("Error:", ex.getMessage());
         }

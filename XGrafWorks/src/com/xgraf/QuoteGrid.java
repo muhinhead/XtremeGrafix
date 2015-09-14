@@ -2,8 +2,6 @@
 // generated file, so all hand editions will be overwritten
 package com.xgraf;
 
-import com.xgraf.GeneralFrame;
-import com.xgraf.GeneralGridPanel;
 import com.xgraf.orm.Quote;
 import com.xgraf.remote.IMessageSender;
 import java.awt.event.ActionEvent;
@@ -15,7 +13,7 @@ import javax.swing.JOptionPane;
 
 public class QuoteGrid extends GeneralGridPanel {
 
-    public static final String SELECT = "Select "
+    private static final String SELECT = "Select "
             + "quote_id \"Id\","
             + "quote_ref \"Ref.No\","
             + "quote_date \"Date\","
@@ -24,11 +22,18 @@ public class QuoteGrid extends GeneralGridPanel {
             + "(select name from contact where contact_id=quote.contact_id) \"Contact person\","
             + "sub_total \"Sub.Total\" "
             + " from quote where ifnull(is_proforma,0)=0";
-    
+
     private static HashMap<Integer, Integer> maxWidths = new HashMap<Integer, Integer>();
 
     static {
         maxWidths.put(0, 40);
+    }
+
+    /**
+     * @return the SELECT
+     */
+    protected static String getSELECT() {
+        return SELECT;
     }
 
     public QuoteGrid(IMessageSender exchanger) throws RemoteException {
@@ -39,16 +44,18 @@ public class QuoteGrid extends GeneralGridPanel {
         super(exchanger, select, maxWidths, false);
     }
 
-    public QuoteGrid(IMessageSender exchanger,String select, boolean readOnly) throws RemoteException {
-        super(exchanger, select, maxWidths, readOnly);
+    private boolean isProFormInvoice() {
+        return getSelect().indexOf("0)=1") > 0;
     }
 
     @Override
     protected AbstractAction addAction() {
-        return new AbstractAction("Add",new ImageIcon(XGrafWorks.loadImage("newdocument.png", QuoteGrid.class))) {
+        return new AbstractAction("Add", new ImageIcon(XGrafWorks.loadImage("newdocument.png", QuoteGrid.class))) {
             @Override
             public void actionPerformed(ActionEvent ae) {
-                EditQuoteDialog ed = new EditQuoteDialog("Add Quote", null);
+                EditQuoteDialog ed = isProFormInvoice()
+                        ? new EditProFormaInvoiceDialog("Add Pro-Forma Invoice", null)
+                        : new EditQuoteDialog("Add Quote", null);
                 if (EditQuoteDialog.okPressed) {
                     Quote rec = (Quote) ed.getEditPanel().getDbObject();
                     refresh(rec.getPK_ID());
@@ -59,14 +66,18 @@ public class QuoteGrid extends GeneralGridPanel {
 
     @Override
     protected AbstractAction editAction() {
-        return new AbstractAction("Edit",new ImageIcon(XGrafWorks.loadImage("edit.png", QuoteGrid.class))) {
+        return new AbstractAction("Edit", new ImageIcon(XGrafWorks.loadImage("edit.png", QuoteGrid.class))) {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 int id = getSelectedID();
                 if (id != 0) {
                     try {
                         Quote quote = (Quote) exchanger.loadDbObjectOnID(Quote.class, id);
-                        new EditQuoteDialog("Edit record", quote);
+                        if (isProFormInvoice()) {
+                            new EditProFormaInvoiceDialog("Edit Pro-Forma Invoice", quote);
+                        } else {
+                            new EditQuoteDialog("Edit record", quote);
+                        }
                         if (EditQuoteDialog.okPressed) {
                             refresh();
                         }
@@ -80,7 +91,7 @@ public class QuoteGrid extends GeneralGridPanel {
 
     @Override
     protected AbstractAction delAction() {
-        return new AbstractAction("Delete",new ImageIcon(XGrafWorks.loadImage("trash.png", QuoteGrid.class))) {
+        return new AbstractAction("Delete", new ImageIcon(XGrafWorks.loadImage("trash.png", QuoteGrid.class))) {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 int id = getSelectedID();
@@ -99,4 +110,3 @@ public class QuoteGrid extends GeneralGridPanel {
         };
     }
 }
-

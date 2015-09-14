@@ -53,7 +53,8 @@ public class EditContactPanel extends EditPanelWithPhoto {
         JComponent[] edits = new JComponent[]{
             getGridPanel(idField = new JTextField(), 4),
             nameField = new JTextField(32),
-            comboPanelWithLookupBtn(companyCB = new JComboBox(companyCbModel), compLA = new CompanyLookupAction(companyCB)),
+            comboPanelWithLookupBtn(companyCB = new JComboBox(companyCbModel), 
+                    compLA = new CompanyLookupAction(companyCB, null)),
             phoneField = new JTextField(),
             getBorderPanel(new JComponent[]{
                 emailField = new JTextField(16),

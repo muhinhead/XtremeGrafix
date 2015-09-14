@@ -2,67 +2,309 @@
 // generated file, so all hand editions will be overwritten
 package com.xgraf;
 
-import com.xgraf.RecordEditPanel;
+import com.xgraf.orm.Company;
+import com.xgraf.orm.Contact;
+import com.xgraf.orm.Quote;
+import com.xgraf.orm.dbobject.ComboItem;
 import com.xgraf.orm.dbobject.DbObject;
+import com.xlend.util.Java2sAutoComboBox;
+import com.xlend.util.SelectedDateSpinner;
 import com.xlend.util.SelectedNumberSpinner;
-import javax.swing.JCheckBox;
+import com.xlend.util.Util;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.rmi.RemoteException;
+import java.util.Date;
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 public class EditQuotePanel extends RecordEditPanel {
 
-public EditQuotePanel(DbObject dbObject) {
+    private JTextField idField;
+    private JTextField quoteOrderNoField;
+    private SelectedDateSpinner dateSP;
+    private CompanyLookupAction compLA;
+    private JComboBox companyCB;
+    private JTextField companyAddressField;
+    private Java2sAutoComboBox serviceTypeCB;
+    private JComboBox contactPersonCB;
+    private JTextField contactPhoneField;
+    private JTextField contactEmailField;
+    private DefaultComboBoxModel contactCbModel;
+    private DefaultComboBoxModel companyCbModel;
+    private ContactLookupAction contLA;
+    private JTextField bankAccHolderField;
+    private JTextField bankField;
+    private JTextField bankAccNoField;
+    private JTextField bankBranchCodeField;
+    private Java2sAutoComboBox bankAccTypeCB;
+    private SelectedDateSpinner validDateSP;
+    private SelectedNumberSpinner depositPercentSP;
+    private SelectedNumberSpinner refDepositPercentSP;
+    private SelectedNumberSpinner outBalanceWeeksSP;
+    private Java2sAutoComboBox prefPayMethodCB;
+
+    public EditQuotePanel(DbObject dbObject) {
         super(dbObject);
     }
 
-//column: quote_id type: INT class: java.lang.Integer
-    private JTextField quoteIdField;
-//column: company_id type: INT class: java.lang.Integer
-    private JComboBox companyIdComboBox;
-//column: contact_id type: INT class: java.lang.Integer
-    private JComboBox contactIdComboBox;
-//column: quote_ref type: VARCHAR class: java.lang.String
     private JTextField quoteRefField;
-//column: order_no type: VARCHAR class: java.lang.String
-    private JTextField orderNoField;
-//column: quote_date type: DATE class: java.sql.Date
-//column: is_proforma type: BIT class: java.lang.Boolean
-    private JCheckBox isProformaCheckBox;
-//column: sub_total type: DECIMAL class: java.math.BigDecimal
-//column: bank_acc_holder type: VARCHAR class: java.lang.String
-    private JTextField bankAccHolderField;
-//column: bank type: VARCHAR class: java.lang.String
-    private JTextField bankField;
-//column: bank_branch_code type: VARCHAR class: java.lang.String
-    private JTextField bankBranchCodeField;
-//column: bank_acc_no type: VARCHAR class: java.lang.String
-    private JTextField bankAccNoField;
-//column: bank_acc_type type: VARCHAR class: java.lang.String
-    private JTextField bankAccTypeField;
-//column: valid_term type: DATE class: java.sql.Date
-//column: deposit_percent type: DECIMAL class: java.math.BigDecimal
-//column: refund_break_percent type: DECIMAL class: java.math.BigDecimal
-//column: outbalance_weeks type: TINYINT class: java.lang.Integer
-    private SelectedNumberSpinner outbalanceWeeksNumberSpinner;
-//column: pref_pay_method type: VARCHAR class: java.lang.String
-    private JTextField prefPayMethodField;
-//column: add_conditions type: VARCHAR class: java.lang.String
-    private JTextField addConditionsField;
 
     @Override
     protected void fillContent() {
-        //TODO
+        String[] titles = {
+            "ID:",
+            "Quote ref #:",
+            "Order No:",
+            "Date:",
+            "<html><b>Banking </b></html>",
+            "Acc holder:",
+            "Bank:",
+            "Branch Code:",
+            "Account No:",
+            "Account Type:",
+            "<html><b>Terms </b></html>",
+            "Quotes valid until:",
+            "Deposit required to confirm an order,%:",
+            "A refundable breakage deposit,%:",
+            "Outstanding balance is payable prior to event, weeks:",
+            "Preferred method of payment:"
+        };
+        JLabel dtlLbl;
+        JLabel termsLbl;
+        JComponent[] edits = new JComponent[]{
+            getGridPanel(idField = new JTextField(), 5),
+            getGridPanel(quoteRefField = new JTextField(12), 2),
+            getGridPanel(quoteOrderNoField = new JTextField(12), 2),
+            getBorderPanel(new JComponent[]{
+                dateSP = new SelectedDateSpinner(),
+                new JPanel(), new JPanel()
+            }),
+            dtlLbl = new JLabel("Details"),
+            bankAccHolderField = new JTextField(),
+            bankField = new JTextField(),
+            getGridPanel(bankBranchCodeField = new JTextField(), 3),
+            getGridPanel(bankAccNoField = new JTextField(), 3),
+            bankAccTypeCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct("quote", "bank_acc_type")),
+            termsLbl = new JLabel("& Conditions"),
+            getBorderPanel(new JComponent[]{
+                validDateSP = new SelectedDateSpinner(),
+                new JPanel(), new JPanel()
+            }),
+            getBorderPanel(new JComponent[]{
+                depositPercentSP = new SelectedNumberSpinner(50, 0, 100, 1),
+                new JPanel(), new JPanel()
+            }),
+            getBorderPanel(new JComponent[]{
+                refDepositPercentSP = new SelectedNumberSpinner(25, 0, 100, 1),
+                new JPanel(), new JPanel()
+            }),
+            getBorderPanel(new JComponent[]{
+                outBalanceWeeksSP = new SelectedNumberSpinner(3, 0, 52, 1),
+                new JPanel(), new JPanel()
+            }),
+            prefPayMethodCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct("quote", "pref_pay_method"))
+        };
+        Font font = dtlLbl.getFont();
+        dtlLbl.setFont(new Font(font.getFontName(), Font.BOLD, font.getSize()));
+        termsLbl.setFont(new Font(font.getFontName(), Font.BOLD, font.getSize()));
+        idField.setEnabled(false);
+
+        dateSP.setEditor(new JSpinner.DateEditor(dateSP, "dd/MM/yyyy"));
+        Util.addFocusSelectAllAction(dateSP);
+        validDateSP.setEditor(new JSpinner.DateEditor(validDateSP, "dd/MM/yyyy"));
+        Util.addFocusSelectAllAction(validDateSP);
+
+        bankAccTypeCB.setEditable(true);
+        bankAccTypeCB.setStrict(false);
+        prefPayMethodCB.setEditable(true);
+        prefPayMethodCB.setStrict(false);
+
+        organizePanels(titles, edits, null);
+
+        MyJideTabbedPane detailsTab = new MyJideTabbedPane();
+        if (getDbObject() != null) {
+            Quote q = (Quote) getDbObject();
+            try {
+                QuoteitemGrid itmGrid;
+                detailsTab.add(itmGrid = new QuoteitemGrid(XGrafWorks.getExchanger(), q.getQuoteId()), "Items");
+                itmGrid.setPreferredSize(new Dimension(itmGrid.getPreferredSize().width, 300));
+            } catch (RemoteException ex) {
+                XGrafWorks.logAndShowMessage(ex);
+            }
+        } else {
+            detailsTab.add(new JLabel(" To add some items save first this record then open for editing"), "Items");
+        }
+
+        add(detailsTab, BorderLayout.CENTER);
     }
 
     @Override
+    protected JComponent getRightUpperPanel() {
+        JPanel rightUpperPanel = new JPanel(new BorderLayout());
+        rightUpperPanel.setBorder(BorderFactory.createTitledBorder("Billing Information"));
+        JPanel upLabelPanel = new JPanel(new GridLayout(13, 1, 5, 5));
+        JPanel upEditPanel = new JPanel(new GridLayout(13, 1, 5, 5));
+        rightUpperPanel.add(upLabelPanel, BorderLayout.WEST);
+        rightUpperPanel.add(upEditPanel, BorderLayout.CENTER);
+
+        upLabelPanel.add(new JLabel("Billing Contact:", SwingConstants.RIGHT));
+        upLabelPanel.add(new JLabel("Billing Address:", SwingConstants.RIGHT));
+        upLabelPanel.add(new JLabel("Contact Person:", SwingConstants.RIGHT));
+        upLabelPanel.add(new JLabel("Contact Number:", SwingConstants.RIGHT));
+        upLabelPanel.add(new JLabel("Contact E-mail:", SwingConstants.RIGHT));
+        upLabelPanel.add(new JLabel("Service Type:", SwingConstants.RIGHT));
+        upLabelPanel.add(new JPanel());
+        upLabelPanel.add(new JPanel());
+        upLabelPanel.add(new JPanel());
+        upLabelPanel.add(new JPanel());
+        upLabelPanel.add(new JPanel());
+        upLabelPanel.add(new JPanel());
+        upLabelPanel.add(new JPanel());
+
+        companyCbModel = new DefaultComboBoxModel();
+        for (ComboItem ci : XGrafWorks.loadAllCompanies()) {
+            companyCbModel.addElement(ci);
+        }
+        contactCbModel = new DefaultComboBoxModel();
+
+        upEditPanel.add(comboPanelWithLookupBtn(
+                companyCB = new JComboBox(companyCbModel), compLA = new CompanyLookupAction(companyCB, contactCbModel))
+        );
+        upEditPanel.add(companyAddressField = new JTextField(30));
+        upEditPanel.add(comboPanelWithLookupBtn(contactPersonCB = new JComboBox(contactCbModel),
+                contLA = new ContactLookupAction(contactPersonCB, companyCB)));
+        upEditPanel.add(contactPhoneField = new JTextField());
+        upEditPanel.add(contactEmailField = new JTextField());
+        upEditPanel.add(serviceTypeCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct("quote", "service_type")));
+        upEditPanel.add(new JPanel());
+        upEditPanel.add(new JPanel());
+        upEditPanel.add(new JPanel());
+        upEditPanel.add(new JPanel());
+        upEditPanel.add(new JPanel());
+        upEditPanel.add(new JPanel());
+        upEditPanel.add(new JPanel());
+
+        companyAddressField.setEditable(false);
+        contactPhoneField.setEditable(false);
+        contactEmailField.setEditable(false);
+        serviceTypeCB.setEditable(true);
+        serviceTypeCB.setStrict(false);
+
+        companyCB.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Integer companyID = getSelectedCbItem(companyCB);
+                contactCbModel.removeAllElements();
+                for (ComboItem ci : XGrafWorks.loadContactsOnCompany(companyID)) {
+                    contactCbModel.addElement(ci);
+                }
+                try {
+                    Company comp = (Company) XGrafWorks.getExchanger().loadDbObjectOnID(Company.class, companyID.intValue());
+                    companyAddressField.setText(comp.getStreet() + " " + comp.getCity());
+                } catch (RemoteException ex) {
+                    XGrafWorks.logAndShowMessage(ex);
+                }
+            }
+        });
+        companyCB.setSelectedIndex(0);
+        contactPersonCB.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Integer contactID = getSelectedCbItem(contactPersonCB);
+                if (contactID != null) {
+                    try {
+                        Contact cont = (Contact) XGrafWorks.getExchanger().loadDbObjectOnID(Contact.class, contactID.intValue());
+                        contactPhoneField.setText(cont.getPhone());
+                        contactEmailField.setText(cont.getEmail()
+                                + (cont.getEmail1() != null && !cont.getEmail1().isEmpty() ? ", " + cont.getEmail1() : ""));
+                    } catch (RemoteException ex) {
+                        XGrafWorks.logAndShowMessage(ex);
+                    }
+                }
+            }
+        });
+        return rightUpperPanel;
+    }
+
+    @Override
+
     public void loadData() {
-        //TODO
+        Quote q = (Quote) getDbObject();
+        if (q!=null) {
+            idField.setText(q.getQuoteId().toString());
+            quoteRefField.setText(q.getQuoteRef());
+            quoteOrderNoField.setText(q.getOrderNo());
+            dateSP.setValue(new java.util.Date(q.getQuoteDate().getTime()));
+            //TODO: load sub_total?
+            bankField.setText(q.getBank());
+            bankAccHolderField.setText(q.getBankAccHolder());
+            bankBranchCodeField.setText(q.getBankBranchCode());
+            bankAccNoField.setText(q.getBankAccNo());
+            bankAccTypeCB.setSelectedItem(q.getBankAccType());
+            selectComboItem(companyCB, q.getCompanyId());
+            selectComboItem(contactPersonCB, q.getContactId());
+            serviceTypeCB.setSelectedItem(q.getServiceType());
+            validDateSP.setValue(new java.util.Date(q.getValidTerm().getTime()));
+            depositPercentSP.setValue(q.getDepositPercent());
+            refDepositPercentSP.setValue(q.getRefundBreakPercent());
+            outBalanceWeeksSP.setValue(q.getOutbalanceWeeks());
+            prefPayMethodCB.setSelectedItem(q.getPrefPayMethod());
+        }
     }
 
     @Override
     public boolean save() throws Exception {
-        //TODO
-        return true;
+        Quote q = (Quote) getDbObject();
+        boolean isNew = (q==null);
+        if (isNew) {
+            q = new Quote(null);
+            q.setQuoteId(0);
+        }
+        q.setQuoteRef(quoteRefField.getText());
+        q.setOrderNo(quoteOrderNoField.getText());
+        java.util.Date dt = (java.util.Date) dateSP.getValue();
+        q.setQuoteDate(new java.sql.Date(dt.getTime()));
+        q.setBank(bankField.getText());
+        q.setBankAccHolder(bankAccHolderField.getText());
+        q.setBankBranchCode(bankBranchCodeField.getText());
+        q.setBankAccNo(bankAccNoField.getText());
+        q.setBankAccType((String) bankAccTypeCB.getSelectedItem());
+        q.setCompanyId(getSelectedCbItem(companyCB));
+        q.setContactId(getSelectedCbItem(contactPersonCB));
+        q.setServiceType((String) serviceTypeCB.getSelectedItem());
+        dt = (Date) validDateSP.getValue();
+        q.setValidTerm(new java.sql.Date(dt.getTime()));
+        q.setDepositPercent((Integer) depositPercentSP.getValue());
+        q.setRefundBreakPercent((Integer) refDepositPercentSP.getValue());
+        q.setOutbalanceWeeks((Integer) outBalanceWeeksSP.getValue());
+        q.setPrefPayMethod((String) prefPayMethodCB.getSelectedItem());
+        q.setIsProforma(getIsPerform());
+        return saveDbRecord(q, isNew);
+    }
+
+    AbstractAction printAction() {
+        return new AbstractAction("Print", new ImageIcon(XGrafWorks.loadImage("printform.png", EditRecordDialog.class))) {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                GeneralFrame.notImplementedYet();
+            }
+        };
+    }
+
+    protected Integer getIsPerform() {
+        return 0;
     }
 }
-

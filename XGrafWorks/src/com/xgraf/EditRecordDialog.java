@@ -38,6 +38,12 @@ public abstract class EditRecordDialog extends PopupDialog {
         return XGrafWorks.HDR_COLOR;
     }
     
+    protected void addBeforeButtons(JPanel btnPanel) {        
+    }
+
+    protected void addAfterButtons(JPanel btnPanel) {        
+    }
+    
     protected void fillContent(RecordEditPanel editPanel) {
         super.fillContent();
         setOkPressed(false);
@@ -46,9 +52,11 @@ public abstract class EditRecordDialog extends PopupDialog {
         this.editPanel.setOwnerDialog(this);
         JPanel btnPanel = new JPanel();
 //        btnPanel.add(applyButton = new JButton(applyAction = getApplyAction()));
+        addBeforeButtons(btnPanel);
         btnPanel.add(saveButton = new JButton(saveAction = getSaveAction()));
         btnPanel.add(cancelButton = new JButton(cancelAction = getCancelAction()));
-
+        addAfterButtons(btnPanel);
+        
 //        applyButton.setToolTipText("Apply changes to database");
         saveButton.setToolTipText("Save changes and close the dialog");
         cancelButton.setToolTipText("Discard changes and close the dialog");

@@ -21,6 +21,7 @@ public class DocumentsFrame extends GeneralFrame {
         "Quotes", "Pro-Forma Invoices", "Tax Invoices", "Statement of Accounts", "Credit Notes"
     };
     private QuoteGrid quotesPanel;
+    private ProFormaInvoiceGrid proFormaInvoicePanel;
 
     public DocumentsFrame(IMessageSender exchanger) {
         super("Customers & Contacts", exchanger);
@@ -54,7 +55,14 @@ public class DocumentsFrame extends GeneralFrame {
     }
 
     private Component getProformaInvoicesPanel() {
-        return new JPanel(); 
+        if(proFormaInvoicePanel==null) {
+            try {
+                proFormaInvoicePanel = new ProFormaInvoiceGrid(getExchanger());
+            } catch (RemoteException ex) {
+                XGrafWorks.logAndShowMessage(ex);
+            }
+        }
+        return proFormaInvoicePanel;
     }
 
     private Component getTaxInvoicesPanel() {

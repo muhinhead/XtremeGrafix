@@ -2,8 +2,9 @@
 // generated file, so all hand editions will be overwritten
 package com.xgraf;
 
-import com.xgraf.EditRecordDialog;
 import com.xgraf.orm.Quote;
+import javax.swing.JButton;
+import javax.swing.JPanel;
 
 public class EditQuoteDialog extends EditRecordDialog {
 
@@ -20,6 +21,11 @@ public class EditQuoteDialog extends EditRecordDialog {
     @Override
     protected void setOkPressed(boolean b) {
         okPressed = b;
+    }
+    
+    @Override
+    protected void addBeforeButtons(JPanel btnPanel) {  
+        btnPanel.add(new JButton(((EditQuotePanel)getEditPanel()).printAction()));
     }
 }
 
