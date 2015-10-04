@@ -102,7 +102,7 @@ public class LookupDialog extends PopupDialog {
             buttonPanel.add(okBtn);
         }
 
-        cancelBtn = new JButton(cancelAction = new AbstractAction("Cancel",new ImageIcon(XGrafWorks.loadImage("cancel.png", QuoteGrid.class))) {
+        cancelBtn = new JButton(cancelAction = new AbstractAction("Cancel",new ImageIcon(XGrafWorks.loadImage("cancel.png", LookupDialog.class))) {
             @Override
             public void actionPerformed(ActionEvent e) {
                 choosedID = null;
@@ -143,7 +143,7 @@ public class LookupDialog extends PopupDialog {
     }
 
     private AbstractAction selectionAction(String title) {
-        return new AbstractAction(title,new ImageIcon(XGrafWorks.loadImage("ok.png", QuoteGrid.class))) {
+        return new AbstractAction(title,new ImageIcon(XGrafWorks.loadImage("ok.png", LookupDialog.class))) {
             @Override
             public void actionPerformed(ActionEvent e) {
                 boolean found = false;

@@ -21,6 +21,7 @@ public class EditCompanyPanel extends RecordEditPanel {
     private JTextField idField;
 //column: name type: VARCHAR class: java.lang.String
     private Java2sAutoComboBox companyNameCB;
+    private Java2sAutoComboBox tradingAsCB;
 //column: street type: VARCHAR class: java.lang.String
     private Java2sAutoComboBox streetCB;
 //column: area_pobox type: VARCHAR class: java.lang.String
@@ -45,6 +46,7 @@ public class EditCompanyPanel extends RecordEditPanel {
         String[] titles = {
             "ID:",
             "Company Name:",
+            "Trading as:",
             "Address:",
             "Area / PO Box:",
             "City:", //"Code:"
@@ -53,6 +55,7 @@ public class EditCompanyPanel extends RecordEditPanel {
         JComponent[] edits = new JComponent[]{
             getGridPanel(idField = new JTextField(), 4),
             companyNameCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct("company", "name")),
+            tradingAsCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct("company", "trading_as")),
             streetCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct("company", "street")),
             getGridPanel(areaPoboxCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct("company", "area_pobox")), 2),
             getGridPanel(new JComponent[]{
@@ -70,7 +73,7 @@ public class EditCompanyPanel extends RecordEditPanel {
         };
         idField.setEnabled(false);
         for (Java2sAutoComboBox acb : new Java2sAutoComboBox[]{
-            cityCB, streetCB, areaPoboxCB, companyNameCB
+            cityCB, streetCB, areaPoboxCB, companyNameCB, tradingAsCB
         }) {
             acb.setEditable(true);
             acb.setStrict(false);
@@ -101,6 +104,7 @@ public class EditCompanyPanel extends RecordEditPanel {
         if (comp != null) {
             idField.setText(comp.getCompanyId().toString());
             companyNameCB.setSelectedItem(comp.getName());
+            tradingAsCB.setSelectedItem(comp.getTradingAs());
             streetCB.setSelectedItem(comp.getStreet());
             areaPoboxCB.setSelectedItem(comp.getAreaPobox());
             cityCB.setSelectedItem(comp.getCity());
@@ -123,6 +127,7 @@ public class EditCompanyPanel extends RecordEditPanel {
             comp.setCompanyId(0);
         }
         comp.setName((String) companyNameCB.getSelectedItem());
+        comp.setTradingAs((String)tradingAsCB.getSelectedItem());
         comp.setStreet((String) streetCB.getSelectedItem());
         comp.setPostcode(postcodeField.getText());
         comp.setAreaPobox((String) areaPoboxCB.getSelectedItem());

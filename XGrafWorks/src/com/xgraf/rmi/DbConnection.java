@@ -114,7 +114,8 @@ public class DbConnection {
         + "    unit_price decimal (8,2) not null,"
         + "    constraint quoteitem_pk primary key (quoteitem_id),"
         + "    constraint quoteitem_quote_fk foreign key (quote_id) references quote (quote_id) on delete cascade"
-        + ")"
+        + ")",
+        "alter table company add trading_as varchar(128)"
     };
 
     public static String getLogin() {

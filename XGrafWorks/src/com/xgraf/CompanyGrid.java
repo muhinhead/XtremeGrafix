@@ -17,14 +17,15 @@ import javax.swing.JOptionPane;
 public class CompanyGrid extends GeneralGridPanel {
 
     public static final String SELECT = "Select "
-                                      + "company_id \"Id\","
-                                      + "name \"Company\","
-                                      + "street \"Address\","
-                                      + "area_pobox \"Address/PO box\","
-                                      + "city \"City\","
-                                      + "postcode \"Post code\","
-                                      + "reg_no \"Reg.No.\","
-                                      + "vat_no \"Vat.No.\" from company";
+            + "company_id \"Id\","
+            + "name \"Company\","
+            + "trading_as \"Trading as\","
+            + "street \"Address\","
+            + "area_pobox \"Address/PO box\","
+            + "city \"City\","
+            + "postcode \"Post code\","
+            + "concat('No ',reg_no) \"Reg.No.\","
+            + "concat('No ',vat_no) \"Vat.No.\" from company";
     private static HashMap<Integer, Integer> maxWidths = new HashMap<Integer, Integer>();
 
     static {
@@ -40,13 +41,13 @@ public class CompanyGrid extends GeneralGridPanel {
         super(exchanger, select, maxWidths, false);
     }
 
-    public CompanyGrid(IMessageSender exchanger,String select, boolean readOnly) throws RemoteException {
+    public CompanyGrid(IMessageSender exchanger, String select, boolean readOnly) throws RemoteException {
         super(exchanger, select, maxWidths, readOnly);
     }
 
     @Override
     protected AbstractAction addAction() {
-        return new AbstractAction("Add",new ImageIcon(XGrafWorks.loadImage("newdocument.png", CompanyGrid.class))) {
+        return new AbstractAction("Add", new ImageIcon(XGrafWorks.loadImage("newdocument.png", CompanyGrid.class))) {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 EditCompanyDialog ed = new EditCompanyDialog("Add Company", null);
@@ -60,7 +61,7 @@ public class CompanyGrid extends GeneralGridPanel {
 
     @Override
     protected AbstractAction editAction() {
-        return new AbstractAction("Edit",new ImageIcon(XGrafWorks.loadImage("edit.png", CompanyGrid.class))) {
+        return new AbstractAction("Edit", new ImageIcon(XGrafWorks.loadImage("edit.png", CompanyGrid.class))) {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 int id = getSelectedID();
@@ -81,7 +82,7 @@ public class CompanyGrid extends GeneralGridPanel {
 
     @Override
     protected AbstractAction delAction() {
-        return new AbstractAction("Delete",new ImageIcon(XGrafWorks.loadImage("trash.png", CompanyGrid.class))) {
+        return new AbstractAction("Delete", new ImageIcon(XGrafWorks.loadImage("trash.png", CompanyGrid.class))) {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 int id = getSelectedID();
@@ -100,4 +101,3 @@ public class CompanyGrid extends GeneralGridPanel {
         };
     }
 }
-

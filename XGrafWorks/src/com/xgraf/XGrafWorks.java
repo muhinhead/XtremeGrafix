@@ -13,7 +13,6 @@ import com.xgraf.remote.IMessageSender;
 import com.xgraf.rmi.DbConnection;
 import com.xgraf.rmi.ExchangeFactory;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Image;
 import java.awt.Window;
 import java.io.File;
@@ -38,8 +37,6 @@ import javax.swing.JPasswordField;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.UIManager;
-import javax.swing.plaf.FontUIResource;
 
 /**
  *
@@ -47,7 +44,7 @@ import javax.swing.plaf.FontUIResource;
  */
 public class XGrafWorks {
 
-    private static final String version = "0.1";
+    private static final String version = "0.2";
     private static Logger logger = null;
     private static FileHandler fh;
     private static Properties props;

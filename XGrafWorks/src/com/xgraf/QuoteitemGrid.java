@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 public class QuoteitemGrid extends GeneralGridPanel {
@@ -54,7 +55,7 @@ public class QuoteitemGrid extends GeneralGridPanel {
     
     @Override
     protected AbstractAction addAction() {
-        return new AbstractAction("Add") {
+        return new AbstractAction("Add", new ImageIcon(XGrafWorks.loadImage("plus.png", QuoteGrid.class))) {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 EditQuoteitemDialog.quoteID = getParentQuoteID();
@@ -69,7 +70,7 @@ public class QuoteitemGrid extends GeneralGridPanel {
 
     @Override
     protected AbstractAction editAction() {
-        return new AbstractAction("Edit") {
+        return new AbstractAction("Edit", new ImageIcon(XGrafWorks.loadImage("edit16.png", QuoteGrid.class))) {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 int id = getSelectedID();
@@ -91,7 +92,7 @@ public class QuoteitemGrid extends GeneralGridPanel {
 
     @Override
     protected AbstractAction delAction() {
-        return new AbstractAction("Delete") {
+        return new AbstractAction("Delete", new ImageIcon(XGrafWorks.loadImage("minus.png", QuoteGrid.class))) {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 int id = getSelectedID();

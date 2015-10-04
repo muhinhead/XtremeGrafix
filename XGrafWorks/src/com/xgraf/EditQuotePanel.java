@@ -9,10 +9,12 @@ import com.xgraf.orm.Quoteitem;
 import com.xgraf.orm.dbobject.ComboItem;
 import com.xgraf.orm.dbobject.DbObject;
 import com.xlend.util.Java2sAutoComboBox;
+import com.xlend.util.PopupDialog;
 import com.xlend.util.SelectedDateSpinner;
 import com.xlend.util.SelectedNumberSpinner;
 import com.xlend.util.Util;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -285,8 +287,6 @@ public class EditQuotePanel extends RecordEditPanel {
         totalLabel.setText("R" + total);
     }
 
-    
-    
     @Override
     public boolean save() throws Exception {
         Quote q = (Quote) getDbObject();
@@ -314,6 +314,7 @@ public class EditQuotePanel extends RecordEditPanel {
         q.setOutbalanceWeeks((Integer) outBalanceWeeksSP.getValue());
         q.setPrefPayMethod((String) prefPayMethodCB.getSelectedItem());
         q.setIsProforma(getIsPerform());
+        q.setSubTotal(Double.parseDouble(totalLabel.getText().substring(1)));
         return saveDbRecord(q, isNew);
     }
 
@@ -321,7 +322,19 @@ public class EditQuotePanel extends RecordEditPanel {
         return new AbstractAction("Print", new ImageIcon(XGrafWorks.loadImage("printform.png", EditRecordDialog.class))) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                GeneralFrame.notImplementedYet();
+                //GeneralFrame.notImplementedYet();
+                new PopupDialog(null, "Print preview", getDbObject()) {
+                    @Override
+                    protected Color getHeaderBackground() {
+                        return XGrafWorks.HDR_COLOR;
+                    }
+
+                    @Override
+                    protected void fillContent() {
+                        super.fillContent();
+                        getContentPane().add(new QuotePrintPanel(this,(Quote)getDbObject()), BorderLayout.CENTER);
+                    }
+                };
             }
         };
     }

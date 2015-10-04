@@ -159,7 +159,7 @@ public abstract class EditPanelWithPhoto extends RecordEditPanel {
     }
 
     private JButton getLoadPictureButton() {
-        JButton loadButton = new JButton("Choose picture...");
+        JButton loadButton = new JButton("Choose picture...", new ImageIcon(XGrafWorks.loadImage("plus.png", EditPanelWithPhoto.class)));
         loadButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 loadDocImageFromFile();

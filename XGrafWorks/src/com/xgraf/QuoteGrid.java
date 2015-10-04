@@ -15,18 +15,19 @@ public class QuoteGrid extends GeneralGridPanel {
 
     private static final String SELECT = "Select "
             + "quote_id \"Id\","
-            + "quote_ref \"Ref.No\","
             + "quote_date \"Date\","
+            + "(select name from company where company_id=quote.company_id) \"Customer\","
+            + "quote_ref \"Quote Ref #\","
             + "order_no \"Order No\","
-            + "(select name from company where company_id=quote.company_id) \"Company\","
-            + "(select name from contact where contact_id=quote.contact_id) \"Contact person\","
-            + "sub_total \"Sub.Total\" "
+//            + "(select name from contact where contact_id=quote.contact_id) \"Contact person\","
+            + "sub_total \"Amount\" "
             + " from quote where ifnull(is_proforma,0)=0";
 
     private static HashMap<Integer, Integer> maxWidths = new HashMap<Integer, Integer>();
 
     static {
         maxWidths.put(0, 40);
+        maxWidths.put(5, 200);
     }
 
     /**
