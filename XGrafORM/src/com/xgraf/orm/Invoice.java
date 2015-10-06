@@ -8,15 +8,15 @@ import com.xgraf.orm.dbobject.Triggers;
 import java.sql.*;
 import java.util.ArrayList;
 
-public class Quote extends DbObject  {
+public class Invoice extends DbObject  {
     private static Triggers activeTriggers = null;
-    private Integer quoteId = null;
+    private Integer invoiceId = null;
     private Integer companyId = null;
     private Integer contactId = null;
     private String serviceType = null;
-    private String quoteRef = null;
+    private String invoiceRef = null;
     private String orderNo = null;
-    private Date quoteDate = null;
+    private Date invoiceDate = null;
     private Integer isProforma = null;
     private Double subTotal = null;
     private String bankAccHolder = null;
@@ -31,23 +31,23 @@ public class Quote extends DbObject  {
     private String prefPayMethod = null;
     private String addConditions = null;
 
-    public Quote(Connection connection) {
-        super(connection, "quote", "quote_id");
-        setColumnNames(new String[]{"quote_id", "company_id", "contact_id", "service_type", "quote_ref", "order_no", "quote_date", "is_proforma", "sub_total", "bank_acc_holder", "bank", "bank_branch_code", "bank_acc_no", "bank_acc_type", "valid_term", "deposit_percent", "refund_break_percent", "outbalance_weeks", "pref_pay_method", "add_conditions"});
+    public Invoice(Connection connection) {
+        super(connection, "invoice", "invoice_id");
+        setColumnNames(new String[]{"invoice_id", "company_id", "contact_id", "service_type", "invoice_ref", "order_no", "invoice_date", "is_proforma", "sub_total", "bank_acc_holder", "bank", "bank_branch_code", "bank_acc_no", "bank_acc_type", "valid_term", "deposit_percent", "refund_break_percent", "outbalance_weeks", "pref_pay_method", "add_conditions"});
     }
 
-    public Quote(Connection connection, Integer quoteId, Integer companyId, Integer contactId, String serviceType, String quoteRef, String orderNo, Date quoteDate, Integer isProforma, Double subTotal, String bankAccHolder, String bank, String bankBranchCode, String bankAccNo, String bankAccType, Date validTerm, Integer depositPercent, Integer refundBreakPercent, Integer outbalanceWeeks, String prefPayMethod, String addConditions) {
-        super(connection, "quote", "quote_id");
-        setNew(quoteId.intValue() <= 0);
-//        if (quoteId.intValue() != 0) {
-            this.quoteId = quoteId;
+    public Invoice(Connection connection, Integer invoiceId, Integer companyId, Integer contactId, String serviceType, String invoiceRef, String orderNo, Date invoiceDate, Integer isProforma, Double subTotal, String bankAccHolder, String bank, String bankBranchCode, String bankAccNo, String bankAccType, Date validTerm, Integer depositPercent, Integer refundBreakPercent, Integer outbalanceWeeks, String prefPayMethod, String addConditions) {
+        super(connection, "invoice", "invoice_id");
+        setNew(invoiceId.intValue() <= 0);
+//        if (invoiceId.intValue() != 0) {
+            this.invoiceId = invoiceId;
 //        }
         this.companyId = companyId;
         this.contactId = contactId;
         this.serviceType = serviceType;
-        this.quoteRef = quoteRef;
+        this.invoiceRef = invoiceRef;
         this.orderNo = orderNo;
-        this.quoteDate = quoteDate;
+        this.invoiceDate = invoiceDate;
         this.isProforma = isProforma;
         this.subTotal = subTotal;
         this.bankAccHolder = bankAccHolder;
@@ -64,36 +64,36 @@ public class Quote extends DbObject  {
     }
 
     public DbObject loadOnId(int id) throws SQLException, ForeignKeyViolationException {
-        Quote quote = null;
+        Invoice invoice = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        String stmt = "SELECT quote_id,company_id,contact_id,service_type,quote_ref,order_no,quote_date,is_proforma,sub_total,bank_acc_holder,bank,bank_branch_code,bank_acc_no,bank_acc_type,valid_term,deposit_percent,refund_break_percent,outbalance_weeks,pref_pay_method,add_conditions FROM quote WHERE quote_id=" + id;
+        String stmt = "SELECT invoice_id,company_id,contact_id,service_type,invoice_ref,order_no,invoice_date,is_proforma,sub_total,bank_acc_holder,bank,bank_branch_code,bank_acc_no,bank_acc_type,valid_term,deposit_percent,refund_break_percent,outbalance_weeks,pref_pay_method,add_conditions FROM invoice WHERE invoice_id=" + id;
         try {
             ps = getConnection().prepareStatement(stmt);
             rs = ps.executeQuery();
             if (rs.next()) {
-                quote = new Quote(getConnection());
-                quote.setQuoteId(new Integer(rs.getInt(1)));
-                quote.setCompanyId(new Integer(rs.getInt(2)));
-                quote.setContactId(new Integer(rs.getInt(3)));
-                quote.setServiceType(rs.getString(4));
-                quote.setQuoteRef(rs.getString(5));
-                quote.setOrderNo(rs.getString(6));
-                quote.setQuoteDate(rs.getDate(7));
-                quote.setIsProforma(new Integer(rs.getInt(8)));
-                quote.setSubTotal(rs.getDouble(9));
-                quote.setBankAccHolder(rs.getString(10));
-                quote.setBank(rs.getString(11));
-                quote.setBankBranchCode(rs.getString(12));
-                quote.setBankAccNo(rs.getString(13));
-                quote.setBankAccType(rs.getString(14));
-                quote.setValidTerm(rs.getDate(15));
-                quote.setDepositPercent(new Integer(rs.getInt(16)));
-                quote.setRefundBreakPercent(new Integer(rs.getInt(17)));
-                quote.setOutbalanceWeeks(new Integer(rs.getInt(18)));
-                quote.setPrefPayMethod(rs.getString(19));
-                quote.setAddConditions(rs.getString(20));
-                quote.setNew(false);
+                invoice = new Invoice(getConnection());
+                invoice.setInvoiceId(new Integer(rs.getInt(1)));
+                invoice.setCompanyId(new Integer(rs.getInt(2)));
+                invoice.setContactId(new Integer(rs.getInt(3)));
+                invoice.setServiceType(rs.getString(4));
+                invoice.setInvoiceRef(rs.getString(5));
+                invoice.setOrderNo(rs.getString(6));
+                invoice.setInvoiceDate(rs.getDate(7));
+                invoice.setIsProforma(new Integer(rs.getInt(8)));
+                invoice.setSubTotal(rs.getDouble(9));
+                invoice.setBankAccHolder(rs.getString(10));
+                invoice.setBank(rs.getString(11));
+                invoice.setBankBranchCode(rs.getString(12));
+                invoice.setBankAccNo(rs.getString(13));
+                invoice.setBankAccType(rs.getString(14));
+                invoice.setValidTerm(rs.getDate(15));
+                invoice.setDepositPercent(new Integer(rs.getInt(16)));
+                invoice.setRefundBreakPercent(new Integer(rs.getInt(17)));
+                invoice.setOutbalanceWeeks(new Integer(rs.getInt(18)));
+                invoice.setPrefPayMethod(rs.getString(19));
+                invoice.setAddConditions(rs.getString(20));
+                invoice.setNew(false);
             }
         } finally {
             try {
@@ -102,7 +102,7 @@ public class Quote extends DbObject  {
                 if (ps != null) ps.close();
             }
         }
-        return quote;
+        return invoice;
     }
 
     protected void insert() throws SQLException, ForeignKeyViolationException {
@@ -111,19 +111,19 @@ public class Quote extends DbObject  {
          }
          PreparedStatement ps = null;
          String stmt =
-                "INSERT INTO quote ("+(getQuoteId().intValue()!=0?"quote_id,":"")+"company_id,contact_id,service_type,quote_ref,order_no,quote_date,is_proforma,sub_total,bank_acc_holder,bank,bank_branch_code,bank_acc_no,bank_acc_type,valid_term,deposit_percent,refund_break_percent,outbalance_weeks,pref_pay_method,add_conditions) values("+(getQuoteId().intValue()!=0?"?,":"")+"?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                "INSERT INTO invoice ("+(getInvoiceId().intValue()!=0?"invoice_id,":"")+"company_id,contact_id,service_type,invoice_ref,order_no,invoice_date,is_proforma,sub_total,bank_acc_holder,bank,bank_branch_code,bank_acc_no,bank_acc_type,valid_term,deposit_percent,refund_break_percent,outbalance_weeks,pref_pay_method,add_conditions) values("+(getInvoiceId().intValue()!=0?"?,":"")+"?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
          try {
              ps = getConnection().prepareStatement(stmt);
              int n = 0;
-             if (getQuoteId().intValue()!=0) {
-                 ps.setObject(++n, getQuoteId());
+             if (getInvoiceId().intValue()!=0) {
+                 ps.setObject(++n, getInvoiceId());
              }
              ps.setObject(++n, getCompanyId());
              ps.setObject(++n, getContactId());
              ps.setObject(++n, getServiceType());
-             ps.setObject(++n, getQuoteRef());
+             ps.setObject(++n, getInvoiceRef());
              ps.setObject(++n, getOrderNo());
-             ps.setObject(++n, getQuoteDate());
+             ps.setObject(++n, getInvoiceDate());
              ps.setObject(++n, getIsProforma());
              ps.setObject(++n, getSubTotal());
              ps.setObject(++n, getBankAccHolder());
@@ -142,13 +142,13 @@ public class Quote extends DbObject  {
              if (ps != null) ps.close();
          }
          ResultSet rs = null;
-         if (getQuoteId().intValue()==0) {
-             stmt = "SELECT max(quote_id) FROM quote";
+         if (getInvoiceId().intValue()==0) {
+             stmt = "SELECT max(invoice_id) FROM invoice";
              try {
                  ps = getConnection().prepareStatement(stmt);
                  rs = ps.executeQuery();
                  if (rs.next()) {
-                     setQuoteId(new Integer(rs.getInt(1)));
+                     setInvoiceId(new Integer(rs.getInt(1)));
                  }
              } finally {
                  try {
@@ -174,17 +174,17 @@ public class Quote extends DbObject  {
             }
             PreparedStatement ps = null;
             String stmt =
-                    "UPDATE quote " +
-                    "SET company_id = ?, contact_id = ?, service_type = ?, quote_ref = ?, order_no = ?, quote_date = ?, is_proforma = ?, sub_total = ?, bank_acc_holder = ?, bank = ?, bank_branch_code = ?, bank_acc_no = ?, bank_acc_type = ?, valid_term = ?, deposit_percent = ?, refund_break_percent = ?, outbalance_weeks = ?, pref_pay_method = ?, add_conditions = ?" + 
-                    " WHERE quote_id = " + getQuoteId();
+                    "UPDATE invoice " +
+                    "SET company_id = ?, contact_id = ?, service_type = ?, invoice_ref = ?, order_no = ?, invoice_date = ?, is_proforma = ?, sub_total = ?, bank_acc_holder = ?, bank = ?, bank_branch_code = ?, bank_acc_no = ?, bank_acc_type = ?, valid_term = ?, deposit_percent = ?, refund_break_percent = ?, outbalance_weeks = ?, pref_pay_method = ?, add_conditions = ?" + 
+                    " WHERE invoice_id = " + getInvoiceId();
             try {
                 ps = getConnection().prepareStatement(stmt);
                 ps.setObject(1, getCompanyId());
                 ps.setObject(2, getContactId());
                 ps.setObject(3, getServiceType());
-                ps.setObject(4, getQuoteRef());
+                ps.setObject(4, getInvoiceRef());
                 ps.setObject(5, getOrderNo());
-                ps.setObject(6, getQuoteDate());
+                ps.setObject(6, getInvoiceDate());
                 ps.setObject(7, getIsProforma());
                 ps.setObject(8, getSubTotal());
                 ps.setObject(9, getBankAccHolder());
@@ -213,38 +213,38 @@ public class Quote extends DbObject  {
         if (getTriggers() != null) {
             getTriggers().beforeDelete(this);
         }
-        {// delete cascade from quoteitem
-            Quoteitem[] records = (Quoteitem[])Quoteitem.load(getConnection(),"quote_id = " + getQuoteId(),null);
+        {// delete cascade from invoiceitem
+            Invoiceitem[] records = (Invoiceitem[])Invoiceitem.load(getConnection(),"invoice_id = " + getInvoiceId(),null);
             for (int i = 0; i<records.length; i++) {
-                Quoteitem quoteitem = records[i];
-                quoteitem.delete();
+                Invoiceitem invoiceitem = records[i];
+                invoiceitem.delete();
             }
         }
         PreparedStatement ps = null;
         String stmt =
-                "DELETE FROM quote " +
-                "WHERE quote_id = " + getQuoteId();
+                "DELETE FROM invoice " +
+                "WHERE invoice_id = " + getInvoiceId();
         try {
             ps = getConnection().prepareStatement(stmt);
             ps.execute();
         } finally {
             if (ps != null) ps.close();
         }
-        setQuoteId(new Integer(-getQuoteId().intValue()));
+        setInvoiceId(new Integer(-getInvoiceId().intValue()));
         if (getTriggers() != null) {
             getTriggers().afterDelete(this);
         }
     }
 
     public boolean isDeleted() {
-        return (getQuoteId().intValue() < 0);
+        return (getInvoiceId().intValue() < 0);
     }
 
     public static DbObject[] load(Connection con,String whereCondition,String orderCondition) throws SQLException {
         ArrayList lst = new ArrayList();
         PreparedStatement ps = null;
         ResultSet rs = null;
-        String stmt = "SELECT quote_id,company_id,contact_id,service_type,quote_ref,order_no,quote_date,is_proforma,sub_total,bank_acc_holder,bank,bank_branch_code,bank_acc_no,bank_acc_type,valid_term,deposit_percent,refund_break_percent,outbalance_weeks,pref_pay_method,add_conditions FROM quote " +
+        String stmt = "SELECT invoice_id,company_id,contact_id,service_type,invoice_ref,order_no,invoice_date,is_proforma,sub_total,bank_acc_holder,bank,bank_branch_code,bank_acc_no,bank_acc_type,valid_term,deposit_percent,refund_break_percent,outbalance_weeks,pref_pay_method,add_conditions FROM invoice " +
                 ((whereCondition != null && whereCondition.length() > 0) ?
                 " WHERE " + whereCondition : "") +
                 ((orderCondition != null && orderCondition.length() > 0) ?
@@ -254,7 +254,7 @@ public class Quote extends DbObject  {
             rs = ps.executeQuery();
             while (rs.next()) {
                 DbObject dbObj;
-                lst.add(dbObj=new Quote(con,new Integer(rs.getInt(1)),new Integer(rs.getInt(2)),new Integer(rs.getInt(3)),rs.getString(4),rs.getString(5),rs.getString(6),rs.getDate(7),new Integer(rs.getInt(8)),rs.getDouble(9),rs.getString(10),rs.getString(11),rs.getString(12),rs.getString(13),rs.getString(14),rs.getDate(15),new Integer(rs.getInt(16)),new Integer(rs.getInt(17)),new Integer(rs.getInt(18)),rs.getString(19),rs.getString(20)));
+                lst.add(dbObj=new Invoice(con,new Integer(rs.getInt(1)),new Integer(rs.getInt(2)),new Integer(rs.getInt(3)),rs.getString(4),rs.getString(5),rs.getString(6),rs.getDate(7),new Integer(rs.getInt(8)),rs.getDouble(9),rs.getString(10),rs.getString(11),rs.getString(12),rs.getString(13),rs.getString(14),rs.getDate(15),new Integer(rs.getInt(16)),new Integer(rs.getInt(17)),new Integer(rs.getInt(18)),rs.getString(19),rs.getString(20)));
                 dbObj.setNew(false);
             }
         } finally {
@@ -264,10 +264,10 @@ public class Quote extends DbObject  {
                 if (ps != null) ps.close();
             }
         }
-        Quote[] objects = new Quote[lst.size()];
+        Invoice[] objects = new Invoice[lst.size()];
         for (int i = 0; i < lst.size(); i++) {
-            Quote quote = (Quote) lst.get(i);
-            objects[i] = quote;
+            Invoice invoice = (Invoice) lst.get(i);
+            objects[i] = invoice;
         }
         return objects;
     }
@@ -279,7 +279,7 @@ public class Quote extends DbObject  {
         boolean ok = false;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        String stmt = "SELECT quote_id FROM quote " +
+        String stmt = "SELECT invoice_id FROM invoice " +
                 ((whereCondition != null && whereCondition.length() > 0) ?
                 "WHERE " + whereCondition : "");
         try {
@@ -297,27 +297,27 @@ public class Quote extends DbObject  {
     }
 
     //public String toString() {
-    //    return getQuoteId() + getDelimiter();
+    //    return getInvoiceId() + getDelimiter();
     //}
 
     public Integer getPK_ID() {
-        return quoteId;
+        return invoiceId;
     }
 
     public void setPK_ID(Integer id) throws ForeignKeyViolationException {
         boolean prevIsNew = isNew();
-        setQuoteId(id);
+        setInvoiceId(id);
         setNew(prevIsNew);
     }
 
-    public Integer getQuoteId() {
-        return quoteId;
+    public Integer getInvoiceId() {
+        return invoiceId;
     }
 
-    public void setQuoteId(Integer quoteId) throws ForeignKeyViolationException {
-        setWasChanged(this.quoteId != null && this.quoteId != quoteId);
-        this.quoteId = quoteId;
-        setNew(quoteId.intValue() == 0);
+    public void setInvoiceId(Integer invoiceId) throws ForeignKeyViolationException {
+        setWasChanged(this.invoiceId != null && this.invoiceId != invoiceId);
+        this.invoiceId = invoiceId;
+        setNew(invoiceId.intValue() == 0);
     }
 
     public Integer getCompanyId() {
@@ -326,7 +326,7 @@ public class Quote extends DbObject  {
 
     public void setCompanyId(Integer companyId) throws SQLException, ForeignKeyViolationException {
         if (companyId!=null && !Company.exists(getConnection(),"company_id = " + companyId)) {
-            throw new ForeignKeyViolationException("Can't set company_id, foreign key violation: quote_company_fk");
+            throw new ForeignKeyViolationException("Can't set company_id, foreign key violation: invoice_company_fk");
         }
         setWasChanged(this.companyId != null && !this.companyId.equals(companyId));
         this.companyId = companyId;
@@ -338,7 +338,7 @@ public class Quote extends DbObject  {
 
     public void setContactId(Integer contactId) throws SQLException, ForeignKeyViolationException {
         if (contactId!=null && !Contact.exists(getConnection(),"contact_id = " + contactId)) {
-            throw new ForeignKeyViolationException("Can't set contact_id, foreign key violation: quote_contact_fk");
+            throw new ForeignKeyViolationException("Can't set contact_id, foreign key violation: invoice_contact_fk");
         }
         setWasChanged(this.contactId != null && !this.contactId.equals(contactId));
         this.contactId = contactId;
@@ -353,13 +353,13 @@ public class Quote extends DbObject  {
         this.serviceType = serviceType;
     }
 
-    public String getQuoteRef() {
-        return quoteRef;
+    public String getInvoiceRef() {
+        return invoiceRef;
     }
 
-    public void setQuoteRef(String quoteRef) throws SQLException, ForeignKeyViolationException {
-        setWasChanged(this.quoteRef != null && !this.quoteRef.equals(quoteRef));
-        this.quoteRef = quoteRef;
+    public void setInvoiceRef(String invoiceRef) throws SQLException, ForeignKeyViolationException {
+        setWasChanged(this.invoiceRef != null && !this.invoiceRef.equals(invoiceRef));
+        this.invoiceRef = invoiceRef;
     }
 
     public String getOrderNo() {
@@ -371,13 +371,13 @@ public class Quote extends DbObject  {
         this.orderNo = orderNo;
     }
 
-    public Date getQuoteDate() {
-        return quoteDate;
+    public Date getInvoiceDate() {
+        return invoiceDate;
     }
 
-    public void setQuoteDate(Date quoteDate) throws SQLException, ForeignKeyViolationException {
-        setWasChanged(this.quoteDate != null && !this.quoteDate.equals(quoteDate));
-        this.quoteDate = quoteDate;
+    public void setInvoiceDate(Date invoiceDate) throws SQLException, ForeignKeyViolationException {
+        setWasChanged(this.invoiceDate != null && !this.invoiceDate.equals(invoiceDate));
+        this.invoiceDate = invoiceDate;
     }
 
     public Integer getIsProforma() {
@@ -506,13 +506,13 @@ public class Quote extends DbObject  {
     }
     public Object[] getAsRow() {
         Object[] columnValues = new Object[20];
-        columnValues[0] = getQuoteId();
+        columnValues[0] = getInvoiceId();
         columnValues[1] = getCompanyId();
         columnValues[2] = getContactId();
         columnValues[3] = getServiceType();
-        columnValues[4] = getQuoteRef();
+        columnValues[4] = getInvoiceRef();
         columnValues[5] = getOrderNo();
-        columnValues[6] = getQuoteDate();
+        columnValues[6] = getInvoiceDate();
         columnValues[7] = getIsProforma();
         columnValues[8] = getSubTotal();
         columnValues[9] = getBankAccHolder();
@@ -542,9 +542,9 @@ public class Quote extends DbObject  {
     public void fillFromString(String row) throws ForeignKeyViolationException, SQLException {
         String[] flds = splitStr(row, delimiter);
         try {
-            setQuoteId(Integer.parseInt(flds[0]));
+            setInvoiceId(Integer.parseInt(flds[0]));
         } catch(NumberFormatException ne) {
-            setQuoteId(null);
+            setInvoiceId(null);
         }
         try {
             setCompanyId(Integer.parseInt(flds[1]));
@@ -557,9 +557,9 @@ public class Quote extends DbObject  {
             setContactId(null);
         }
         setServiceType(flds[3]);
-        setQuoteRef(flds[4]);
+        setInvoiceRef(flds[4]);
         setOrderNo(flds[5]);
-        setQuoteDate(toDate(flds[6]));
+        setInvoiceDate(toDate(flds[6]));
         try {
             setIsProforma(Integer.parseInt(flds[7]));
         } catch(NumberFormatException ne) {

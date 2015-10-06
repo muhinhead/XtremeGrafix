@@ -8,47 +8,47 @@ import com.xgraf.orm.dbobject.Triggers;
 import java.sql.*;
 import java.util.ArrayList;
 
-public class Quoteitem extends DbObject  {
+public class Invoiceitem extends DbObject  {
     private static Triggers activeTriggers = null;
-    private Integer quoteitemId = null;
-    private Integer quoteId = null;
+    private Integer invoiceitemId = null;
+    private Integer invoiceId = null;
     private String descr = null;
     private Integer qty = null;
     private Double unitPrice = null;
 
-    public Quoteitem(Connection connection) {
-        super(connection, "quoteitem", "quoteitem_id");
-        setColumnNames(new String[]{"quoteitem_id", "quote_id", "descr", "qty", "unit_price"});
+    public Invoiceitem(Connection connection) {
+        super(connection, "invoiceitem", "invoiceitem_id");
+        setColumnNames(new String[]{"invoiceitem_id", "invoice_id", "descr", "qty", "unit_price"});
     }
 
-    public Quoteitem(Connection connection, Integer quoteitemId, Integer quoteId, String descr, Integer qty, Double unitPrice) {
-        super(connection, "quoteitem", "quoteitem_id");
-        setNew(quoteitemId.intValue() <= 0);
-//        if (quoteitemId.intValue() != 0) {
-            this.quoteitemId = quoteitemId;
+    public Invoiceitem(Connection connection, Integer invoiceitemId, Integer invoiceId, String descr, Integer qty, Double unitPrice) {
+        super(connection, "invoiceitem", "invoiceitem_id");
+        setNew(invoiceitemId.intValue() <= 0);
+//        if (invoiceitemId.intValue() != 0) {
+            this.invoiceitemId = invoiceitemId;
 //        }
-        this.quoteId = quoteId;
+        this.invoiceId = invoiceId;
         this.descr = descr;
         this.qty = qty;
         this.unitPrice = unitPrice;
     }
 
     public DbObject loadOnId(int id) throws SQLException, ForeignKeyViolationException {
-        Quoteitem quoteitem = null;
+        Invoiceitem invoiceitem = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        String stmt = "SELECT quoteitem_id,quote_id,descr,qty,unit_price FROM quoteitem WHERE quoteitem_id=" + id;
+        String stmt = "SELECT invoiceitem_id,invoice_id,descr,qty,unit_price FROM invoiceitem WHERE invoiceitem_id=" + id;
         try {
             ps = getConnection().prepareStatement(stmt);
             rs = ps.executeQuery();
             if (rs.next()) {
-                quoteitem = new Quoteitem(getConnection());
-                quoteitem.setQuoteitemId(new Integer(rs.getInt(1)));
-                quoteitem.setQuoteId(new Integer(rs.getInt(2)));
-                quoteitem.setDescr(rs.getString(3));
-                quoteitem.setQty(new Integer(rs.getInt(4)));
-                quoteitem.setUnitPrice(rs.getDouble(5));
-                quoteitem.setNew(false);
+                invoiceitem = new Invoiceitem(getConnection());
+                invoiceitem.setInvoiceitemId(new Integer(rs.getInt(1)));
+                invoiceitem.setInvoiceId(new Integer(rs.getInt(2)));
+                invoiceitem.setDescr(rs.getString(3));
+                invoiceitem.setQty(new Integer(rs.getInt(4)));
+                invoiceitem.setUnitPrice(rs.getDouble(5));
+                invoiceitem.setNew(false);
             }
         } finally {
             try {
@@ -57,7 +57,7 @@ public class Quoteitem extends DbObject  {
                 if (ps != null) ps.close();
             }
         }
-        return quoteitem;
+        return invoiceitem;
     }
 
     protected void insert() throws SQLException, ForeignKeyViolationException {
@@ -66,14 +66,14 @@ public class Quoteitem extends DbObject  {
          }
          PreparedStatement ps = null;
          String stmt =
-                "INSERT INTO quoteitem ("+(getQuoteitemId().intValue()!=0?"quoteitem_id,":"")+"quote_id,descr,qty,unit_price) values("+(getQuoteitemId().intValue()!=0?"?,":"")+"?,?,?,?)";
+                "INSERT INTO invoiceitem ("+(getInvoiceitemId().intValue()!=0?"invoiceitem_id,":"")+"invoice_id,descr,qty,unit_price) values("+(getInvoiceitemId().intValue()!=0?"?,":"")+"?,?,?,?)";
          try {
              ps = getConnection().prepareStatement(stmt);
              int n = 0;
-             if (getQuoteitemId().intValue()!=0) {
-                 ps.setObject(++n, getQuoteitemId());
+             if (getInvoiceitemId().intValue()!=0) {
+                 ps.setObject(++n, getInvoiceitemId());
              }
-             ps.setObject(++n, getQuoteId());
+             ps.setObject(++n, getInvoiceId());
              ps.setObject(++n, getDescr());
              ps.setObject(++n, getQty());
              ps.setObject(++n, getUnitPrice());
@@ -82,13 +82,13 @@ public class Quoteitem extends DbObject  {
              if (ps != null) ps.close();
          }
          ResultSet rs = null;
-         if (getQuoteitemId().intValue()==0) {
-             stmt = "SELECT max(quoteitem_id) FROM quoteitem";
+         if (getInvoiceitemId().intValue()==0) {
+             stmt = "SELECT max(invoiceitem_id) FROM invoiceitem";
              try {
                  ps = getConnection().prepareStatement(stmt);
                  rs = ps.executeQuery();
                  if (rs.next()) {
-                     setQuoteitemId(new Integer(rs.getInt(1)));
+                     setInvoiceitemId(new Integer(rs.getInt(1)));
                  }
              } finally {
                  try {
@@ -114,12 +114,12 @@ public class Quoteitem extends DbObject  {
             }
             PreparedStatement ps = null;
             String stmt =
-                    "UPDATE quoteitem " +
-                    "SET quote_id = ?, descr = ?, qty = ?, unit_price = ?" + 
-                    " WHERE quoteitem_id = " + getQuoteitemId();
+                    "UPDATE invoiceitem " +
+                    "SET invoice_id = ?, descr = ?, qty = ?, unit_price = ?" + 
+                    " WHERE invoiceitem_id = " + getInvoiceitemId();
             try {
                 ps = getConnection().prepareStatement(stmt);
-                ps.setObject(1, getQuoteId());
+                ps.setObject(1, getInvoiceId());
                 ps.setObject(2, getDescr());
                 ps.setObject(3, getQty());
                 ps.setObject(4, getUnitPrice());
@@ -140,29 +140,29 @@ public class Quoteitem extends DbObject  {
         }
         PreparedStatement ps = null;
         String stmt =
-                "DELETE FROM quoteitem " +
-                "WHERE quoteitem_id = " + getQuoteitemId();
+                "DELETE FROM invoiceitem " +
+                "WHERE invoiceitem_id = " + getInvoiceitemId();
         try {
             ps = getConnection().prepareStatement(stmt);
             ps.execute();
         } finally {
             if (ps != null) ps.close();
         }
-        setQuoteitemId(new Integer(-getQuoteitemId().intValue()));
+        setInvoiceitemId(new Integer(-getInvoiceitemId().intValue()));
         if (getTriggers() != null) {
             getTriggers().afterDelete(this);
         }
     }
 
     public boolean isDeleted() {
-        return (getQuoteitemId().intValue() < 0);
+        return (getInvoiceitemId().intValue() < 0);
     }
 
     public static DbObject[] load(Connection con,String whereCondition,String orderCondition) throws SQLException {
         ArrayList lst = new ArrayList();
         PreparedStatement ps = null;
         ResultSet rs = null;
-        String stmt = "SELECT quoteitem_id,quote_id,descr,qty,unit_price FROM quoteitem " +
+        String stmt = "SELECT invoiceitem_id,invoice_id,descr,qty,unit_price FROM invoiceitem " +
                 ((whereCondition != null && whereCondition.length() > 0) ?
                 " WHERE " + whereCondition : "") +
                 ((orderCondition != null && orderCondition.length() > 0) ?
@@ -172,7 +172,7 @@ public class Quoteitem extends DbObject  {
             rs = ps.executeQuery();
             while (rs.next()) {
                 DbObject dbObj;
-                lst.add(dbObj=new Quoteitem(con,new Integer(rs.getInt(1)),new Integer(rs.getInt(2)),rs.getString(3),new Integer(rs.getInt(4)),rs.getDouble(5)));
+                lst.add(dbObj=new Invoiceitem(con,new Integer(rs.getInt(1)),new Integer(rs.getInt(2)),rs.getString(3),new Integer(rs.getInt(4)),rs.getDouble(5)));
                 dbObj.setNew(false);
             }
         } finally {
@@ -182,10 +182,10 @@ public class Quoteitem extends DbObject  {
                 if (ps != null) ps.close();
             }
         }
-        Quoteitem[] objects = new Quoteitem[lst.size()];
+        Invoiceitem[] objects = new Invoiceitem[lst.size()];
         for (int i = 0; i < lst.size(); i++) {
-            Quoteitem quoteitem = (Quoteitem) lst.get(i);
-            objects[i] = quoteitem;
+            Invoiceitem invoiceitem = (Invoiceitem) lst.get(i);
+            objects[i] = invoiceitem;
         }
         return objects;
     }
@@ -197,7 +197,7 @@ public class Quoteitem extends DbObject  {
         boolean ok = false;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        String stmt = "SELECT quoteitem_id FROM quoteitem " +
+        String stmt = "SELECT invoiceitem_id FROM invoiceitem " +
                 ((whereCondition != null && whereCondition.length() > 0) ?
                 "WHERE " + whereCondition : "");
         try {
@@ -215,39 +215,39 @@ public class Quoteitem extends DbObject  {
     }
 
     //public String toString() {
-    //    return getQuoteitemId() + getDelimiter();
+    //    return getInvoiceitemId() + getDelimiter();
     //}
 
     public Integer getPK_ID() {
-        return quoteitemId;
+        return invoiceitemId;
     }
 
     public void setPK_ID(Integer id) throws ForeignKeyViolationException {
         boolean prevIsNew = isNew();
-        setQuoteitemId(id);
+        setInvoiceitemId(id);
         setNew(prevIsNew);
     }
 
-    public Integer getQuoteitemId() {
-        return quoteitemId;
+    public Integer getInvoiceitemId() {
+        return invoiceitemId;
     }
 
-    public void setQuoteitemId(Integer quoteitemId) throws ForeignKeyViolationException {
-        setWasChanged(this.quoteitemId != null && this.quoteitemId != quoteitemId);
-        this.quoteitemId = quoteitemId;
-        setNew(quoteitemId.intValue() == 0);
+    public void setInvoiceitemId(Integer invoiceitemId) throws ForeignKeyViolationException {
+        setWasChanged(this.invoiceitemId != null && this.invoiceitemId != invoiceitemId);
+        this.invoiceitemId = invoiceitemId;
+        setNew(invoiceitemId.intValue() == 0);
     }
 
-    public Integer getQuoteId() {
-        return quoteId;
+    public Integer getInvoiceId() {
+        return invoiceId;
     }
 
-    public void setQuoteId(Integer quoteId) throws SQLException, ForeignKeyViolationException {
-        if (quoteId!=null && !Quote.exists(getConnection(),"quote_id = " + quoteId)) {
-            throw new ForeignKeyViolationException("Can't set quote_id, foreign key violation: quoteitem_quote_fk");
+    public void setInvoiceId(Integer invoiceId) throws SQLException, ForeignKeyViolationException {
+        if (invoiceId!=null && !Invoice.exists(getConnection(),"invoice_id = " + invoiceId)) {
+            throw new ForeignKeyViolationException("Can't set invoice_id, foreign key violation: invoiceitem_invoice_fk");
         }
-        setWasChanged(this.quoteId != null && !this.quoteId.equals(quoteId));
-        this.quoteId = quoteId;
+        setWasChanged(this.invoiceId != null && !this.invoiceId.equals(invoiceId));
+        this.invoiceId = invoiceId;
     }
 
     public String getDescr() {
@@ -278,8 +278,8 @@ public class Quoteitem extends DbObject  {
     }
     public Object[] getAsRow() {
         Object[] columnValues = new Object[5];
-        columnValues[0] = getQuoteitemId();
-        columnValues[1] = getQuoteId();
+        columnValues[0] = getInvoiceitemId();
+        columnValues[1] = getInvoiceId();
         columnValues[2] = getDescr();
         columnValues[3] = getQty();
         columnValues[4] = getUnitPrice();
@@ -299,14 +299,14 @@ public class Quoteitem extends DbObject  {
     public void fillFromString(String row) throws ForeignKeyViolationException, SQLException {
         String[] flds = splitStr(row, delimiter);
         try {
-            setQuoteitemId(Integer.parseInt(flds[0]));
+            setInvoiceitemId(Integer.parseInt(flds[0]));
         } catch(NumberFormatException ne) {
-            setQuoteitemId(null);
+            setInvoiceitemId(null);
         }
         try {
-            setQuoteId(Integer.parseInt(flds[1]));
+            setInvoiceId(Integer.parseInt(flds[1]));
         } catch(NumberFormatException ne) {
-            setQuoteId(null);
+            setInvoiceId(null);
         }
         setDescr(flds[2]);
         try {
