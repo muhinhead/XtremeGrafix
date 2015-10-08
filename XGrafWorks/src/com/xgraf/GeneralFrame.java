@@ -38,7 +38,7 @@ public abstract class GeneralFrame extends JFrame implements WindowListener {
     private ToolBarButton exitButton;
     private JToolBar toolBar;
     private ToolBarButton refreshButton;
-    protected ToolBarButton printButton;
+    protected ToolBarButton exportButton;
     private JToggleButton searchButton;
 //    private JToggleButton filterButton;
     private HashMap<GeneralGridPanel, String> grids = new HashMap<GeneralGridPanel, String>();
@@ -94,9 +94,9 @@ public abstract class GeneralFrame extends JFrame implements WindowListener {
         statusLabel2.setText(" ");
         statusPanel.add(statusLabel2, BorderLayout.CENTER);
 
-        printButton = new ToolBarButton("print.png");
-        printButton.setToolTipText("Data export");
-        printButton.addActionListener(getPrintAction());
+        exportButton = new ToolBarButton("export.png");
+        exportButton.setToolTipText("Data export");
+        exportButton.addActionListener(getPrintAction());
 
         searchButton = new JToggleButton(new ImageIcon(Util.loadImage("search.png")));
         getSearchButton().setToolTipText("Search on fragment");
@@ -133,7 +133,7 @@ public abstract class GeneralFrame extends JFrame implements WindowListener {
         srcField.addKeyListener(getSrcFieldKeyListener());
         srcField.setMaximumSize(srcField.getPreferredSize());
 
-        getToolBar().add(printButton);
+        getToolBar().add(exportButton);
         addAfterPrint();
         getToolBar().add(refreshButton);
         getToolBar().add(aboutButton);

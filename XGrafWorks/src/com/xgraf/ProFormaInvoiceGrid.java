@@ -15,7 +15,14 @@ import java.rmi.RemoteException;
 public class ProFormaInvoiceGrid extends QuoteGrid {
 
     public ProFormaInvoiceGrid(IMessageSender exchanger) throws RemoteException {
-        super(exchanger, getSELECT().replaceAll("=0", "=1"));
+        super(exchanger, getSELECT().replaceAll("=0", "=1").replaceAll("Quote Ref", "Pro-Forma Inv #"));
     }
-    
+
+    public ProFormaInvoiceGrid(IMessageSender exchanger, int company_id) throws RemoteException {
+        super(exchanger, getSELECT().replaceAll("=0", "=1").replaceAll("Quote Ref", "Pro-Forma Inv #") + " and company_id=" + company_id);
+    }
+
+    public ProFormaInvoiceGrid(int contact_id, IMessageSender exchanger) throws RemoteException {
+        super(exchanger, getSELECT().replaceAll("=0", "=1").replaceAll("Quote Ref", "Pro-Forma Inv #") + " and contact_id=" + contact_id);
+    }
 }

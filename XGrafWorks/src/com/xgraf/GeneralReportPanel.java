@@ -4,8 +4,6 @@ import com.xgraf.remote.IMessageSender;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.print.PrinterException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -112,7 +110,7 @@ public abstract class GeneralReportPanel extends JPanel {
     }
 
     private AbstractAction getPrintAction() {
-        return new AbstractAction("Print", new ImageIcon(XGrafWorks.loadImage("print.png", GeneralReportPanel.class))) {
+        return new AbstractAction("Print", new ImageIcon(XGrafWorks.loadImage("printform.png", GeneralReportPanel.class))) {
 
             @Override
             public void actionPerformed(ActionEvent e) {

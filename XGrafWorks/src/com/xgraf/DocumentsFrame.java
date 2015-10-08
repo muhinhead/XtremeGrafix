@@ -22,6 +22,7 @@ public class DocumentsFrame extends GeneralFrame {
     };
     private QuoteGrid quotesPanel;
     private ProFormaInvoiceGrid proFormaInvoicePanel;
+    private InvoiceGrid invoicesPanel;
 
     public DocumentsFrame(IMessageSender exchanger) {
         super("Customers & Contacts", exchanger);
@@ -37,7 +38,7 @@ public class DocumentsFrame extends GeneralFrame {
         MyJideTabbedPane workTab = new MyJideTabbedPane();
         workTab.add(getQuotesPanel(), sheetList[0]);
         workTab.add(getProformaInvoicesPanel(), sheetList[1]);
-        workTab.add(getTaxInvoicesPanel(), sheetList[2]);
+        workTab.add(getInvoicesPanel(), sheetList[2]);
         workTab.add(getStatementsAccountsPanel(), sheetList[3]);
         workTab.add(getCreditNotesPanel(), sheetList[4]);
         return workTab;
@@ -65,8 +66,15 @@ public class DocumentsFrame extends GeneralFrame {
         return proFormaInvoicePanel;
     }
 
-    private Component getTaxInvoicesPanel() {
-        return new JPanel(); 
+    private Component getInvoicesPanel() {
+        if (invoicesPanel == null) {
+            try {
+                registerGrid(invoicesPanel = new InvoiceGrid(getExchanger()));
+            } catch (RemoteException ex) {
+                XGrafWorks.logAndShowMessage(ex);
+            }
+        }
+        return invoicesPanel;
     }
 
     private Component getStatementsAccountsPanel() {

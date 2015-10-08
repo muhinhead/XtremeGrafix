@@ -81,20 +81,22 @@ public class EditCompanyPanel extends RecordEditPanel {
         organizePanels(titles, edits, null);
 
         MyJideTabbedPane detailsTab = new MyJideTabbedPane();
-        if (getDbObject() != null) {
-            Company comp = (Company) getDbObject();
-            try {
-                detailsTab.add(new ContactGrid(XGrafWorks.getExchanger(), comp.getCompanyId()), "Contacts");
-            } catch (RemoteException ex) {
-                XGrafWorks.logAndShowMessage(ex);
-            }
-        } else {
-            detailsTab.add(new JLabel(" To add some contacts save first the company record"), "Contacts");
-        }
         JScrollPane sp;
         detailsTab.add(sp = new JScrollPane(commentsField = new JTextArea(6, 50),
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), "Comments");
+        Company comp = (Company) getDbObject();
+        if(comp != null) {
+            int company_id = comp.getCompanyId();
+            try {
+                detailsTab.add(new ContactGrid(XGrafWorks.getExchanger(), comp.getCompanyId()), "Contacts");
+                detailsTab.add(new QuoteGrid(XGrafWorks.getExchanger(),company_id), "Quotes");
+                detailsTab.add(new ProFormaInvoiceGrid(XGrafWorks.getExchanger(),company_id), "Pro-Forma Invoices");
+                detailsTab.add(new InvoiceGrid(XGrafWorks.getExchanger(),company_id), "Tax Invoices");
+            } catch (RemoteException ex) {
+                XGrafWorks.logAndShowMessage(ex);
+            }
+        }
         add(detailsTab, BorderLayout.CENTER);
     }
 

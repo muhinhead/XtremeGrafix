@@ -2,6 +2,8 @@
 // generated file, so all hand editions will be overwritten
 package com.xgraf;
 
+import com.xgraf.orm.IDocumentItem;
+import com.xgraf.orm.Invoiceitem;
 import com.xgraf.orm.Quoteitem;
 import com.xgraf.orm.dbobject.DbObject;
 import com.xlend.util.SelectedNumberSpinner;
@@ -11,6 +13,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 public class EditQuoteitemPanel extends RecordEditPanel {
+
     private SelectedNumberSpinner unitPriceSpinner;
 
     public EditQuoteitemPanel(DbObject dbObject) {
@@ -33,37 +36,44 @@ public class EditQuoteitemPanel extends RecordEditPanel {
             descrField = new JTextField(30),
             getBorderPanel(new JComponent[]{
                 unitPriceSpinner = new SelectedNumberSpinner(1.0, 1.0, 99999.0, 0.1),
-                new JLabel("Qty:",SwingConstants.RIGHT),
+                new JLabel("Qty:", SwingConstants.RIGHT),
                 qtyNumberSpinner = new SelectedNumberSpinner(1, 1, 10000, 1)
-            }),
-        };
-        organizePanels(titles, edits, null);    
+            }),};
+        organizePanels(titles, edits, null);
         idField.setEnabled(false);
     }
 
     @Override
     public void loadData() {
-        Quoteitem it = (Quoteitem) getDbObject();
+        IDocumentItem it = (IDocumentItem) getDbObject();
         if (it != null) {
-            idField.setText(it.getQuoteitemId().toString());
+            idField.setText(it.getPK_ID().toString());
             descrField.setText(it.getDescr());
             unitPriceSpinner.setValue(it.getUnitPrice());
             qtyNumberSpinner.setValue(it.getQty());
         }
     }
 
+    protected Integer findParentDocID() {
+        return EditQuoteitemDialog.quoteID;
+    }
+    
+    protected IDocumentItem createItm() {
+        return new Quoteitem(null);
+    }
+    
     @Override
     public boolean save() throws Exception {
-        Quoteitem it = (Quoteitem) getDbObject();
+        IDocumentItem it = (IDocumentItem) getDbObject();
         boolean isNew = it == null;
         if (isNew) {
-            it = new Quoteitem(null);
-            it.setQuoteitemId(0);
+            it = createItm();
+            it.setPK_ID(0);
         }
         it.setDescr(descrField.getText());
         it.setQty((Integer) qtyNumberSpinner.getValue());
         it.setUnitPrice((Double) unitPriceSpinner.getValue());
-        it.setQuoteId(EditQuoteitemDialog.quoteID);
-        return saveDbRecord(it, isNew);
+        it.setDocId(findParentDocID());
+        return saveDbRecord((DbObject) it, isNew);
     }
 }

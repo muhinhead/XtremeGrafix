@@ -4,6 +4,8 @@ package com.xgraf;
 
 import com.xgraf.orm.Company;
 import com.xgraf.orm.Contact;
+import com.xgraf.orm.IDocument;
+import com.xgraf.orm.Invoice;
 import com.xgraf.orm.Quote;
 import com.xgraf.orm.Quoteitem;
 import com.xgraf.orm.dbobject.ComboItem;
@@ -21,8 +23,6 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.rmi.RemoteException;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
@@ -38,7 +38,7 @@ import javax.swing.SwingConstants;
 public class EditQuotePanel extends RecordEditPanel {
 
     private JTextField idField;
-    private JTextField quoteOrderNoField;
+    private JTextField orderNoField;
     private SelectedDateSpinner dateSP;
     private JComboBox companyCB;
     private JTextField companyAddressField;
@@ -58,19 +58,53 @@ public class EditQuotePanel extends RecordEditPanel {
     private SelectedNumberSpinner refDepositPercentSP;
     private SelectedNumberSpinner outBalanceWeeksSP;
     private Java2sAutoComboBox prefPayMethodCB;
-    private JLabel totalLabel;
+    protected JLabel totalLabel;
+    private JTextField docRefField;
 
     public EditQuotePanel(DbObject dbObject) {
         super(dbObject);
     }
 
-    private JTextField quoteRefField;
+    // should be overriden for EditInvoicePanel
+    protected String docRefLabel() {
+        return "Quote ref #:";
+    }
+
+    // should be overriden for EditInvoicePanel
+    protected String validUntilLabel() {
+        return "Quotes valid until:";
+    }
+
+    // should be overriden for EditInvoicePanel
+    protected String tableName() {
+        return "quote";
+    }
+
+    // should be overriden for EditInvoicePanel
+    protected JPanel getPrintPanel(PopupDialog dlg) {
+        return new DocumentPrintPanel(dlg, (Quote) getDbObject(), Quoteitem.class);
+    }
+
+    // should be overriden for EditInvoicePanel
+    public void recalcTotal(Integer docID) {
+        double total = 0.0;
+        try {
+            DbObject[] obs = XGrafWorks.getExchanger().getDbObjects(Quoteitem.class, "quote_id=" + docID, null);
+            for (DbObject ob : obs) {
+                Quoteitem itm = (Quoteitem) ob;
+                total += (itm.getQty() * itm.getUnitPrice());
+            }
+        } catch (RemoteException ex) {
+            XGrafWorks.logAndShowMessage(ex);
+        }
+        totalLabel.setText("R" + total);
+    }
 
     @Override
     protected void fillContent() {
         String[] titles = {
             "ID:",
-            "Quote ref #:",
+            docRefLabel(),
             "Order No:",
             "Date:",
             "<html><b>Banking </b></html>",
@@ -80,7 +114,7 @@ public class EditQuotePanel extends RecordEditPanel {
             "Account No:",
             "Account Type:",
             "<html><b>Terms & </b></html>",
-            "Quotes valid until:",
+            validUntilLabel(),
             "Deposit required to confirm an order,%:",
             "A refundable breakage deposit,%:",
             "Outstanding balance is payable prior to event, weeks:",
@@ -92,8 +126,8 @@ public class EditQuotePanel extends RecordEditPanel {
         JLabel termsLbl;
         JComponent[] edits = new JComponent[]{
             getGridPanel(idField = new JTextField(), 5),
-            getGridPanel(quoteRefField = new JTextField(12), 2),
-            getGridPanel(quoteOrderNoField = new JTextField(12), 2),
+            getGridPanel(docRefField = new JTextField(12), 2),
+            getGridPanel(orderNoField = new JTextField(12), 2),
             getBorderPanel(new JComponent[]{
                 dateSP = new SelectedDateSpinner(),
                 new JPanel(), new JPanel()
@@ -103,7 +137,7 @@ public class EditQuotePanel extends RecordEditPanel {
             bankField = new JTextField(),
             getGridPanel(bankBranchCodeField = new JTextField(), 3),
             getGridPanel(bankAccNoField = new JTextField(), 3),
-            bankAccTypeCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct("quote", "bank_acc_type")),
+            bankAccTypeCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct(tableName(), "bank_acc_type")),
             termsLbl = new JLabel("Conditions"),
             getBorderPanel(new JComponent[]{
                 validDateSP = new SelectedDateSpinner(),
@@ -121,7 +155,7 @@ public class EditQuotePanel extends RecordEditPanel {
                 outBalanceWeeksSP = new SelectedNumberSpinner(3, 0, 52, 1),
                 new JPanel(), new JPanel()
             }),
-            prefPayMethodCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct("quote", "pref_pay_method")),
+            prefPayMethodCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct(tableName(), "pref_pay_method")),
             new JPanel(),
             totalLabel = new JLabel("0.0")
         };
@@ -144,11 +178,8 @@ public class EditQuotePanel extends RecordEditPanel {
 
         MyJideTabbedPane detailsTab = new MyJideTabbedPane();
         if (getDbObject() != null) {
-            Quote q = (Quote) getDbObject();
             try {
-                QuoteitemGrid itmGrid;
-                detailsTab.add(itmGrid = new QuoteitemGrid(XGrafWorks.getExchanger(), q.getQuoteId(), this), "Items");
-                itmGrid.setPreferredSize(new Dimension(itmGrid.getPreferredSize().width, 300));
+                detailsTab.add(getItmGrid((IDocument) getDbObject()), "Items");
             } catch (RemoteException ex) {
                 XGrafWorks.logAndShowMessage(ex);
             }
@@ -157,6 +188,12 @@ public class EditQuotePanel extends RecordEditPanel {
         }
 
         add(detailsTab, BorderLayout.CENTER);
+    }
+
+    protected GeneralGridPanel getItmGrid(IDocument q) throws RemoteException {
+        QuoteitemGrid itmGrid = new QuoteitemGrid(XGrafWorks.getExchanger(), q.getPK_ID(), this);
+        itmGrid.setPreferredSize(new Dimension(itmGrid.getPreferredSize().width, 300));
+        return itmGrid;
     }
 
     @Override
@@ -196,7 +233,7 @@ public class EditQuotePanel extends RecordEditPanel {
                 new ContactLookupAction(contactPersonCB, companyCB)));
         upEditPanel.add(contactPhoneField = new JTextField());
         upEditPanel.add(contactEmailField = new JTextField());
-        upEditPanel.add(serviceTypeCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct("quote", "service_type")));
+        upEditPanel.add(serviceTypeCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct(tableName(), "service_type")));
         upEditPanel.add(new JPanel());
         upEditPanel.add(new JPanel());
         upEditPanel.add(new JPanel());
@@ -249,12 +286,12 @@ public class EditQuotePanel extends RecordEditPanel {
 
     @Override
     public void loadData() {
-        Quote q = (Quote) getDbObject();
+        IDocument q = (IDocument) getDbObject();
         if (q != null) {
-            idField.setText(q.getQuoteId().toString());
-            quoteRefField.setText(q.getQuoteRef());
-            quoteOrderNoField.setText(q.getOrderNo());
-            dateSP.setValue(new java.util.Date(q.getQuoteDate().getTime()));
+            idField.setText(q.getPK_ID().toString());
+            docRefField.setText(q.getDocRef());
+            orderNoField.setText(q.getOrderNo());
+            dateSP.setValue(new java.util.Date(q.getDocDate().getTime()));
             //TODO: load sub_total?
             bankField.setText(q.getBank());
             bankAccHolderField.setText(q.getBankAccHolder());
@@ -269,60 +306,45 @@ public class EditQuotePanel extends RecordEditPanel {
             refDepositPercentSP.setValue(q.getRefundBreakPercent());
             outBalanceWeeksSP.setValue(q.getOutbalanceWeeks());
             prefPayMethodCB.setSelectedItem(q.getPrefPayMethod());
-            recalcTotal(q.getQuoteId());
+            recalcTotal(q.getPK_ID());
         }
-    }
-
-    public void recalcTotal(Integer quoteID) {
-        double total = 0.0;
-        try {
-            DbObject[] obs = XGrafWorks.getExchanger().getDbObjects(Quoteitem.class, "quote_id=" + quoteID, null);
-            for (DbObject ob : obs) {
-                Quoteitem itm = (Quoteitem) ob;
-                total += (itm.getQty() * itm.getUnitPrice());
-            }
-        } catch (RemoteException ex) {
-            XGrafWorks.logAndShowMessage(ex);
-        }
-        totalLabel.setText("R" + total);
     }
 
     @Override
     public boolean save() throws Exception {
-        Quote q = (Quote) getDbObject();
-        boolean isNew = (q == null);
+        IDocument doc = (IDocument) getDbObject();
+        boolean isNew = (doc == null);
         if (isNew) {
-            q = new Quote(null);
-            q.setQuoteId(0);
+            doc = (this instanceof EditInvoicePanel ? new Invoice(null) : new Quote(null));
+            doc.setPK_ID(0);
         }
-        q.setQuoteRef(quoteRefField.getText());
-        q.setOrderNo(quoteOrderNoField.getText());
+        doc.setDocRef(docRefField.getText());
+        doc.setOrderNo(orderNoField.getText());
         java.util.Date dt = (java.util.Date) dateSP.getValue();
-        q.setQuoteDate(new java.sql.Date(dt.getTime()));
-        q.setBank(bankField.getText());
-        q.setBankAccHolder(bankAccHolderField.getText());
-        q.setBankBranchCode(bankBranchCodeField.getText());
-        q.setBankAccNo(bankAccNoField.getText());
-        q.setBankAccType((String) bankAccTypeCB.getSelectedItem());
-        q.setCompanyId(getSelectedCbItem(companyCB));
-        q.setContactId(getSelectedCbItem(contactPersonCB));
-        q.setServiceType((String) serviceTypeCB.getSelectedItem());
+        doc.setDocDate(new java.sql.Date(dt.getTime()));
+        doc.setBank(bankField.getText());
+        doc.setBankAccHolder(bankAccHolderField.getText());
+        doc.setBankBranchCode(bankBranchCodeField.getText());
+        doc.setBankAccNo(bankAccNoField.getText());
+        doc.setBankAccType((String) bankAccTypeCB.getSelectedItem());
+        doc.setCompanyId(getSelectedCbItem(companyCB));
+        doc.setContactId(getSelectedCbItem(contactPersonCB));
+        doc.setServiceType((String) serviceTypeCB.getSelectedItem());
         dt = (Date) validDateSP.getValue();
-        q.setValidTerm(new java.sql.Date(dt.getTime()));
-        q.setDepositPercent((Integer) depositPercentSP.getValue());
-        q.setRefundBreakPercent((Integer) refDepositPercentSP.getValue());
-        q.setOutbalanceWeeks((Integer) outBalanceWeeksSP.getValue());
-        q.setPrefPayMethod((String) prefPayMethodCB.getSelectedItem());
-        q.setIsProforma(getIsPerform());
-        q.setSubTotal(Double.parseDouble(totalLabel.getText().substring(1)));
-        return saveDbRecord(q, isNew);
+        doc.setValidTerm(new java.sql.Date(dt.getTime()));
+        doc.setDepositPercent((Integer) depositPercentSP.getValue());
+        doc.setRefundBreakPercent((Integer) refDepositPercentSP.getValue());
+        doc.setOutbalanceWeeks((Integer) outBalanceWeeksSP.getValue());
+        doc.setPrefPayMethod((String) prefPayMethodCB.getSelectedItem());
+        doc.setIsProforma(getIsPerform());
+        doc.setSubTotal(Double.parseDouble(totalLabel.getText().substring(1)));
+        return saveDbRecord((DbObject) doc, isNew);
     }
 
     AbstractAction printAction() {
         return new AbstractAction("Print", new ImageIcon(XGrafWorks.loadImage("printform.png", EditRecordDialog.class))) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //GeneralFrame.notImplementedYet();
                 new PopupDialog(null, "Print preview", getDbObject()) {
                     @Override
                     protected Color getHeaderBackground() {
@@ -332,7 +354,8 @@ public class EditQuotePanel extends RecordEditPanel {
                     @Override
                     protected void fillContent() {
                         super.fillContent();
-                        getContentPane().add(new QuotePrintPanel(this,(Quote)getDbObject()), BorderLayout.CENTER);
+                        getContentPane().add(getPrintPanel(this), BorderLayout.CENTER);
+                        setPreferredSize(new Dimension(750, 700));
                     }
                 };
             }

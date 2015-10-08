@@ -19,7 +19,7 @@ public class QuoteGrid extends GeneralGridPanel {
             + "(select name from company where company_id=quote.company_id) \"Customer\","
             + "quote_ref \"Quote Ref #\","
             + "order_no \"Order No\","
-//            + "(select name from contact where contact_id=quote.contact_id) \"Contact person\","
+            //            + "(select name from contact where contact_id=quote.contact_id) \"Contact person\","
             + "sub_total \"Amount\" "
             + " from quote where ifnull(is_proforma,0)=0";
 
@@ -41,7 +41,19 @@ public class QuoteGrid extends GeneralGridPanel {
         super(exchanger, SELECT, maxWidths, false);
     }
 
+    public QuoteGrid(IMessageSender exchanger, int company_id) throws RemoteException {
+        super(exchanger, SELECT + " and company_id=" + company_id, maxWidths, false);
+    }
+
+    public QuoteGrid(int contact_id, IMessageSender exchanger) throws RemoteException {
+        super(exchanger, SELECT + " and contact_id=" + contact_id, maxWidths, false);
+    }
+
     public QuoteGrid(IMessageSender exchanger, String select) throws RemoteException {
+        super(exchanger, select, maxWidths, false);
+    }
+
+    public QuoteGrid(IMessageSender exchanger, String select, int company_id) throws RemoteException {
         super(exchanger, select, maxWidths, false);
     }
 
@@ -51,18 +63,22 @@ public class QuoteGrid extends GeneralGridPanel {
 
     @Override
     protected AbstractAction addAction() {
-        return new AbstractAction("Add", new ImageIcon(XGrafWorks.loadImage("newdocument.png", QuoteGrid.class))) {
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-                EditQuoteDialog ed = isProFormInvoice()
-                        ? new EditProFormaInvoiceDialog("Add Pro-Forma Invoice", null)
-                        : new EditQuoteDialog("Add Quote", null);
-                if (EditQuoteDialog.okPressed) {
-                    Quote rec = (Quote) ed.getEditPanel().getDbObject();
-                    refresh(rec.getPK_ID());
+        if (getSelect().indexOf("and company_id=") > 0 || getSelect().indexOf("and contact_id=") > 0) {
+            return null;
+        } else {
+            return new AbstractAction("Add", new ImageIcon(XGrafWorks.loadImage("newdocument.png", QuoteGrid.class))) {
+                @Override
+                public void actionPerformed(ActionEvent ae) {
+                    EditQuoteDialog ed = isProFormInvoice()
+                            ? new EditProFormaInvoiceDialog("Add Pro-Forma Invoice", null)
+                            : new EditQuoteDialog("Add Quote", null);
+                    if (EditQuoteDialog.okPressed) {
+                        Quote rec = (Quote) ed.getEditPanel().getDbObject();
+                        refresh(rec.getPK_ID());
+                    }
                 }
-            }
-        };
+            };
+        }
     }
 
     @Override

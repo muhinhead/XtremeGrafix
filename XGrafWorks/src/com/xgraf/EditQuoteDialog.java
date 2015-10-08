@@ -2,6 +2,7 @@
 // generated file, so all hand editions will be overwritten
 package com.xgraf;
 
+import com.xgraf.orm.IDocument;
 import com.xgraf.orm.Quote;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -9,7 +10,7 @@ import javax.swing.JPanel;
 public class EditQuoteDialog extends EditRecordDialog {
 
     public static boolean okPressed;
-    public EditQuoteDialog(String title, Quote rec) {
+    public EditQuoteDialog(String title, IDocument rec) {
         super(title, rec);
     }
 

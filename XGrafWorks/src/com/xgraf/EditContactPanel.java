@@ -6,6 +6,9 @@ import com.xgraf.orm.Contact;
 import com.xgraf.orm.dbobject.ComboItem;
 import com.xgraf.orm.dbobject.DbObject;
 import java.awt.BorderLayout;
+import java.rmi.RemoteException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -53,8 +56,8 @@ public class EditContactPanel extends EditPanelWithPhoto {
         JComponent[] edits = new JComponent[]{
             getGridPanel(idField = new JTextField(), 4),
             nameField = new JTextField(32),
-            comboPanelWithLookupBtn(companyCB = new JComboBox(companyCbModel), 
-                    compLA = new CompanyLookupAction(companyCB, null)),
+            comboPanelWithLookupBtn(companyCB = new JComboBox(companyCbModel),
+            compLA = new CompanyLookupAction(companyCB, null)),
             phoneField = new JTextField(),
             getBorderPanel(new JComponent[]{
                 emailField = new JTextField(16),
@@ -70,6 +73,17 @@ public class EditContactPanel extends EditPanelWithPhoto {
         detailsTab.add(sp = new JScrollPane(commentsField = new JTextArea(6, 40),
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), "Comments");
+        Contact cont = (Contact) getDbObject();
+        if (cont != null) {
+            int contact_id = cont.getContactId();
+            try {
+                detailsTab.add(new QuoteGrid(contact_id, XGrafWorks.getExchanger()), "Quotes");
+                detailsTab.add(new ProFormaInvoiceGrid(contact_id, XGrafWorks.getExchanger()), "Pro-Forma Invoices");
+                detailsTab.add(new InvoiceGrid(contact_id, XGrafWorks.getExchanger()), "Tax Invoices");
+            } catch (RemoteException ex) {
+                XGrafWorks.logAndShowMessage(ex);
+            }
+        }
         add(detailsTab, BorderLayout.CENTER);
         compLA.setEnabled(EditContactDialog.companyID == null);
         companyCB.setEnabled(EditContactDialog.companyID == null);
