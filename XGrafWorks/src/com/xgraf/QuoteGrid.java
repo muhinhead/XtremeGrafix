@@ -2,17 +2,27 @@
 // generated file, so all hand editions will be overwritten
 package com.xgraf;
 
+import com.xgraf.orm.IDocument;
+import com.xgraf.orm.Invoice;
+import com.xgraf.orm.InvoiceFromQuote;
 import com.xgraf.orm.Quote;
+import com.xgraf.orm.dbobject.DbObject;
 import com.xgraf.remote.IMessageSender;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.rmi.RemoteException;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.AbstractAction;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 public class QuoteGrid extends GeneralGridPanel {
-
+    
     private static final String SELECT = "Select "
             + "quote_id \"Id\","
             + "quote_date \"Date\","
@@ -22,9 +32,9 @@ public class QuoteGrid extends GeneralGridPanel {
             //            + "(select name from contact where contact_id=quote.contact_id) \"Contact person\","
             + "sub_total \"Amount\" "
             + " from quote where ifnull(is_proforma,0)=0";
-
+    
     private static HashMap<Integer, Integer> maxWidths = new HashMap<Integer, Integer>();
-
+    
     static {
         maxWidths.put(0, 40);
         maxWidths.put(5, 200);
@@ -36,31 +46,40 @@ public class QuoteGrid extends GeneralGridPanel {
     protected static String getSELECT() {
         return SELECT;
     }
-
+    
     public QuoteGrid(IMessageSender exchanger) throws RemoteException {
         super(exchanger, SELECT, maxWidths, false);
     }
-
+    
     public QuoteGrid(IMessageSender exchanger, int company_id) throws RemoteException {
         super(exchanger, SELECT + " and company_id=" + company_id, maxWidths, false);
     }
-
+    
     public QuoteGrid(int contact_id, IMessageSender exchanger) throws RemoteException {
         super(exchanger, SELECT + " and contact_id=" + contact_id, maxWidths, false);
     }
-
+    
     public QuoteGrid(IMessageSender exchanger, String select) throws RemoteException {
         super(exchanger, select, maxWidths, false);
     }
-
+    
     public QuoteGrid(IMessageSender exchanger, String select, int company_id) throws RemoteException {
         super(exchanger, select, maxWidths, false);
     }
-
+    
+    @Override
+    protected JPanel getRightPanel(JPanel btnPanel) {
+        btnPanel.setLayout(new GridLayout(4, 1, 5, 5));
+        JButton duplicateBtn;
+        btnPanel.add(duplicateBtn = new JButton(getGenerateTaxInvoiceAction()));
+        duplicateBtn.setToolTipText("Create/edit a tax invoice");
+        return super.getRightPanel(btnPanel);
+    }
+    
     private boolean isProFormInvoice() {
         return getSelect().indexOf("0)=1") > 0;
     }
-
+    
     @Override
     protected AbstractAction addAction() {
         if (getSelect().indexOf("and company_id=") > 0 || getSelect().indexOf("and contact_id=") > 0) {
@@ -80,7 +99,7 @@ public class QuoteGrid extends GeneralGridPanel {
             };
         }
     }
-
+    
     @Override
     protected AbstractAction editAction() {
         return new AbstractAction("Edit", new ImageIcon(XGrafWorks.loadImage("edit.png", QuoteGrid.class))) {
@@ -105,7 +124,7 @@ public class QuoteGrid extends GeneralGridPanel {
             }
         };
     }
-
+    
     @Override
     protected AbstractAction delAction() {
         return new AbstractAction("Delete", new ImageIcon(XGrafWorks.loadImage("trash.png", QuoteGrid.class))) {
@@ -124,6 +143,37 @@ public class QuoteGrid extends GeneralGridPanel {
                     }
                 }
             }
+        };
+    }
+    
+    private AbstractAction getGenerateTaxInvoiceAction() {
+        return new AbstractAction("Tax Invoice", new ImageIcon(XGrafWorks.loadImage("duplicate.png", getClass()))) {
+            
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int id = getSelectedID();
+                if (id != 0) {
+                    try {
+                        DbObject[] invs = XGrafWorks.getExchanger().getDbObjects(Invoice.class, "quote_id=" + id, null);
+                        if (invs.length == 0) {
+                            if (GeneralFrame.yesNo("Attention!", "Do you want to generate a tax invoice?") == JOptionPane.YES_OPTION) {
+                                Quote q = (Quote) exchanger.loadDbObjectOnID(Quote.class, id);
+                                InvoiceFromQuote iq = new InvoiceFromQuote(q, exchanger);
+                                iq.save();
+                                new EditInvoiceDialog("New Tax Invoice based on the quote", iq);
+                            }
+                        } else {
+                            new EditInvoiceDialog("Edit Tax Invoice based on the quote", (IDocument) invs[0]);
+                        }
+                        if (EditInvoiceDialog.okPressed) {
+                            DocumentsFrame.getInvoiceGrid().refresh();
+                        }
+                    } catch (Exception ex) {
+                        XGrafWorks.logAndShowMessage(ex);
+                    }
+                }
+            }
+            
         };
     }
 }

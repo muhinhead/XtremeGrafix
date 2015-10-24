@@ -18,12 +18,14 @@ import java.util.Properties;
  */
 public class ExchangeFactory {
 
-    private static final int DB_VERSION_ID = 1;
-    public static final String DB_VERSION = "0.1";
+    private static final int DB_VERSION_ID = 2;
+    public static final String DB_VERSION = "0.2";
     private static String[] fixLocalDBsqls = new String[]{
         "update dbversion set version_id = " + DB_VERSION_ID + ",version = '" + DB_VERSION + "'",
         "alter table contact add photo mediumblob",
-        "alter table company add logo mediumblob"
+        "alter table company add logo mediumblob",
+        "alter table invoice add quote_id int",
+        "alter table invoice add constraint invoice_quote_fk foreign key (quote_id) references quote (quote_id)"
     };
 
     public static IMessageSender getExchanger(String connectString, Properties props) {

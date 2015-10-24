@@ -44,7 +44,7 @@ import javax.swing.SpinnerNumberModel;
  */
 public class XGrafWorks {
 
-    private static final String version = "0.2";
+    private static final String version = "0.2.a";
     private static Logger logger = null;
     private static FileHandler fh;
     private static Properties props;

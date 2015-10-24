@@ -17,9 +17,18 @@ import javax.swing.JTabbedPane;
  */
 public class DocumentsFrame extends GeneralFrame {
 
+    private static InvoiceGrid invoiceGrid;
+    
     private static String[] sheetList = new String[]{
         "Quotes", "Pro-Forma Invoices", "Tax Invoices", "Statement of Accounts", "Credit Notes"
     };
+
+    /**
+     * @return the invoiceGrid
+     */
+    public static InvoiceGrid getInvoiceGrid() {
+        return invoiceGrid;
+    }
     private QuoteGrid quotesPanel;
     private ProFormaInvoiceGrid proFormaInvoicePanel;
     private InvoiceGrid invoicesPanel;
@@ -70,6 +79,7 @@ public class DocumentsFrame extends GeneralFrame {
         if (invoicesPanel == null) {
             try {
                 registerGrid(invoicesPanel = new InvoiceGrid(getExchanger()));
+                invoiceGrid = invoicesPanel;
             } catch (RemoteException ex) {
                 XGrafWorks.logAndShowMessage(ex);
             }
