@@ -21,13 +21,16 @@ import javax.swing.JOptionPane;
  * @author nick
  */
 class InvoiceitemGrid extends GeneralGridPanel {
+
     private static final String WHERE_COND = " where invoice_id=";
     public static final String SELECT = "Select "
             + "invoiceitem_id \"Id\","
             + "descr \"Description\","
             + "qty \"Qty\","
             + "concat('R',unit_price) \"Unit Price\","
-            + "concat('R',qty*unit_price) \"Line Total\" "
+            + "concat('R',qty*unit_price) \"Unit Total\", "
+            + "concat('R',round(qty*unit_price*0.14,2)) \"Vat 14%\","
+            + "concat('R',qty*unit_price+round(qty*unit_price*0.14,2)) \"Line Total\" "
             + "from invoiceitem ";
     private static HashMap<Integer, Integer> maxWidths = new HashMap<Integer, Integer>();
 
@@ -35,12 +38,12 @@ class InvoiceitemGrid extends GeneralGridPanel {
         maxWidths.put(0, 40);
     }
     private final EditInvoicePanel papaPanel;
-    
+
     public InvoiceitemGrid(IMessageSender exchanger, Integer papaDocID, EditInvoicePanel papaPanel) throws RemoteException {
         super(exchanger, SELECT + WHERE_COND + papaDocID.toString(), maxWidths, false);
         this.papaPanel = papaPanel;
     }
-    
+
     private Integer getParentDocID() {
         int pos = getSelect().indexOf(WHERE_COND);
         if (pos > 0) {
@@ -48,13 +51,13 @@ class InvoiceitemGrid extends GeneralGridPanel {
         }
         return null;
     }
-    
-     @Override
+
+    @Override
     public void refresh() {
         super.refresh();
         papaPanel.recalcTotal(getParentDocID());
     }
-    
+
     @Override
     public void refresh(int id) {
         super.refresh(id);
@@ -118,5 +121,5 @@ class InvoiceitemGrid extends GeneralGridPanel {
             }
         };
     }
-    
+
 }

@@ -32,6 +32,7 @@ public class DocumentsFrame extends GeneralFrame {
     private QuoteGrid quotesPanel;
     private ProFormaInvoiceGrid proFormaInvoicePanel;
     private InvoiceGrid invoicesPanel;
+    private StatementGrid statementsPanel;
 
     public DocumentsFrame(IMessageSender exchanger) {
         super("Customers & Contacts", exchanger);
@@ -88,7 +89,14 @@ public class DocumentsFrame extends GeneralFrame {
     }
 
     private Component getStatementsAccountsPanel() {
-        return new JPanel(); 
+        if(statementsPanel == null) {
+            try {
+                registerGrid(statementsPanel = new StatementGrid(getExchanger()));
+            } catch(RemoteException ex) {
+                XGrafWorks.logAndShowMessage(ex);
+            }
+        }
+        return statementsPanel;
     }
 
     private Component getCreditNotesPanel() {

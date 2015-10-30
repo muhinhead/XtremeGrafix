@@ -19,7 +19,9 @@ public class QuoteitemGrid extends GeneralGridPanel {
             + "descr \"Description\","
             + "qty \"Qty\","
             + "concat('R',unit_price) \"Unit Price\","
-            + "concat('R',qty*unit_price) \"Line Total\" "
+            + "concat('R',qty*unit_price) \"Unit Total\", "
+            + "concat('R',round(qty*unit_price*0.14,2)) \"Vat 14%\","
+            + "concat('R',qty*unit_price+round(qty*unit_price*0.14,2)) \"Line Total\" "
             + "from quoteitem ";
     private static HashMap<Integer, Integer> maxWidths = new HashMap<Integer, Integer>();
 
