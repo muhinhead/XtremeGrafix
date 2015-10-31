@@ -342,6 +342,20 @@ public class XGrafWorks {
         }
         return lst;
     }
+    
+    public static List loadDistinct(String[] tables, String column) {
+        StringBuilder sb = new StringBuilder("select 0,'' as "+column);
+        for (String table : tables) {
+            sb.append(" union select distinct 0,"+column+" from "+table);
+        }
+        sb.append(" order by " + column);
+        ComboItem[] itms = loadOnSelect(sb.toString());
+        List lst = new ArrayList(itms.length);
+        for (ComboItem ci : itms) {
+            lst.add(ci.getValue());
+        }
+        return lst;
+    }
 
     /**
      * @param args the command line arguments

@@ -2,6 +2,7 @@ package com.xgraf;
 
 import com.xgraf.orm.dbobject.ComboItem;
 import com.xgraf.orm.dbobject.DbObject;
+import com.xlend.util.Java2sAutoComboBox;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;

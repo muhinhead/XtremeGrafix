@@ -2,13 +2,10 @@
 // generated file, so all hand editions will be overwritten
 package com.xgraf;
 
-import com.xgraf.orm.Company;
-import com.xgraf.orm.Contact;
 import com.xgraf.orm.IDocument;
 import com.xgraf.orm.Invoice;
 import com.xgraf.orm.Quote;
 import com.xgraf.orm.Quoteitem;
-import com.xgraf.orm.dbobject.ComboItem;
 import com.xgraf.orm.dbobject.DbObject;
 import com.xlend.util.Java2sAutoComboBox;
 import com.xlend.util.PopupDialog;
@@ -19,40 +16,22 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.rmi.RemoteException;
 import java.util.Date;
 import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 
-public class EditQuotePanel extends RecordEditPanel {
+public class EditQuotePanel extends BaseEditDocPanel {
 
     private JTextField idField;
     private JTextField orderNoField;
     private SelectedDateSpinner dateSP;
-    private JComboBox companyCB;
-    private JTextField companyAddressField;
-    private Java2sAutoComboBox serviceTypeCB;
-    private JComboBox contactPersonCB;
-    private JTextField contactPhoneField;
-    private JTextField contactEmailField;
-    private DefaultComboBoxModel contactCbModel;
-    private DefaultComboBoxModel companyCbModel;
-    private JTextField bankAccHolderField;
-    private JTextField bankField;
-    private JTextField bankAccNoField;
-    private JTextField bankBranchCodeField;
-    private Java2sAutoComboBox bankAccTypeCB;
     private SelectedDateSpinner validDateSP;
     private SelectedNumberSpinner depositPercentSP;
     private SelectedNumberSpinner refDepositPercentSP;
@@ -76,16 +55,19 @@ public class EditQuotePanel extends RecordEditPanel {
     }
 
     // should be overriden for EditInvoicePanel
+    @Override
     protected String tableName() {
         return "quote";
     }
 
     // should be overriden for EditInvoicePanel
+    @Override
     protected JPanel getPrintPanel(PopupDialog dlg) {
         return new DocumentPrintPanel(dlg, (Quote) getDbObject(), Quoteitem.class);
     }
 
     // should be overriden for EditInvoicePanel
+    @Override
     public void recalcTotal(Integer docID) {
         double total = 0.0;
         try {
@@ -137,7 +119,7 @@ public class EditQuotePanel extends RecordEditPanel {
             bankField = new JTextField(),
             getGridPanel(bankBranchCodeField = new JTextField(), 3),
             getGridPanel(bankAccNoField = new JTextField(), 3),
-            bankAccTypeCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct(tableName(), "bank_acc_type")),
+            bankAccTypeCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct(new String[]{"statement","quote","invoice"}, "bank_acc_type")),
             termsLbl = new JLabel("Conditions"),
             getBorderPanel(new JComponent[]{
                 validDateSP = new SelectedDateSpinner(),
@@ -155,7 +137,7 @@ public class EditQuotePanel extends RecordEditPanel {
                 outBalanceWeeksSP = new SelectedNumberSpinner(3, 0, 52, 1),
                 new JPanel(), new JPanel()
             }),
-            prefPayMethodCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct(tableName(), "pref_pay_method")),
+            prefPayMethodCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct(new String[]{"quote","invoice"}, "pref_pay_method")),
             new JPanel(),
             totalLabel = new JLabel("0.0")
         };
@@ -196,93 +178,6 @@ public class EditQuotePanel extends RecordEditPanel {
         return itmGrid;
     }
 
-    @Override
-    protected JComponent getRightUpperPanel() {
-        JPanel rightUpperPanel = new JPanel(new BorderLayout());
-        rightUpperPanel.setBorder(BorderFactory.createTitledBorder("Billing Information"));
-        JPanel upLabelPanel = new JPanel(new GridLayout(13, 1, 5, 5));
-        JPanel upEditPanel = new JPanel(new GridLayout(13, 1, 5, 5));
-        rightUpperPanel.add(upLabelPanel, BorderLayout.WEST);
-        rightUpperPanel.add(upEditPanel, BorderLayout.CENTER);
-
-        upLabelPanel.add(new JLabel("Billing Contact:", SwingConstants.RIGHT));
-        upLabelPanel.add(new JLabel("Billing Address:", SwingConstants.RIGHT));
-        upLabelPanel.add(new JLabel("Contact Person:", SwingConstants.RIGHT));
-        upLabelPanel.add(new JLabel("Contact Number:", SwingConstants.RIGHT));
-        upLabelPanel.add(new JLabel("Contact E-mail:", SwingConstants.RIGHT));
-        upLabelPanel.add(new JLabel("Service Type:", SwingConstants.RIGHT));
-        upLabelPanel.add(new JPanel());
-        upLabelPanel.add(new JPanel());
-        upLabelPanel.add(new JPanel());
-        upLabelPanel.add(new JPanel());
-        upLabelPanel.add(new JPanel());
-        upLabelPanel.add(new JPanel());
-        upLabelPanel.add(new JPanel());
-
-        companyCbModel = new DefaultComboBoxModel();
-        for (ComboItem ci : XGrafWorks.loadAllCompanies()) {
-            companyCbModel.addElement(ci);
-        }
-        contactCbModel = new DefaultComboBoxModel();
-
-        upEditPanel.add(comboPanelWithLookupBtn(
-                companyCB = new JComboBox(companyCbModel), new CompanyLookupAction(companyCB, contactCbModel))
-        );
-        upEditPanel.add(companyAddressField = new JTextField(30));
-        upEditPanel.add(comboPanelWithLookupBtn(contactPersonCB = new JComboBox(contactCbModel),
-                new ContactLookupAction(contactPersonCB, companyCB)));
-        upEditPanel.add(contactPhoneField = new JTextField());
-        upEditPanel.add(contactEmailField = new JTextField());
-        upEditPanel.add(serviceTypeCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct(tableName(), "service_type")));
-        upEditPanel.add(new JPanel());
-        upEditPanel.add(new JPanel());
-        upEditPanel.add(new JPanel());
-        upEditPanel.add(new JPanel());
-        upEditPanel.add(new JPanel());
-        upEditPanel.add(new JPanel());
-        upEditPanel.add(new JPanel());
-
-        companyAddressField.setEditable(false);
-        contactPhoneField.setEditable(false);
-        contactEmailField.setEditable(false);
-        serviceTypeCB.setEditable(true);
-        serviceTypeCB.setStrict(false);
-
-        companyCB.addActionListener(new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Integer companyID = getSelectedCbItem(companyCB);
-                contactCbModel.removeAllElements();
-                for (ComboItem ci : XGrafWorks.loadContactsOnCompany(companyID)) {
-                    contactCbModel.addElement(ci);
-                }
-                try {
-                    Company comp = (Company) XGrafWorks.getExchanger().loadDbObjectOnID(Company.class, companyID.intValue());
-                    companyAddressField.setText(comp.getStreet() + " " + comp.getCity());
-                } catch (RemoteException ex) {
-                    XGrafWorks.logAndShowMessage(ex);
-                }
-            }
-        });
-        companyCB.setSelectedIndex(0);
-        contactPersonCB.addActionListener(new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Integer contactID = getSelectedCbItem(contactPersonCB);
-                if (contactID != null) {
-                    try {
-                        Contact cont = (Contact) XGrafWorks.getExchanger().loadDbObjectOnID(Contact.class, contactID.intValue());
-                        contactPhoneField.setText(cont.getPhone());
-                        contactEmailField.setText(cont.getEmail()
-                                + (cont.getEmail1() != null && !cont.getEmail1().isEmpty() ? ", " + cont.getEmail1() : ""));
-                    } catch (RemoteException ex) {
-                        XGrafWorks.logAndShowMessage(ex);
-                    }
-                }
-            }
-        });
-        return rightUpperPanel;
-    }
 
     @Override
     public void loadData() {

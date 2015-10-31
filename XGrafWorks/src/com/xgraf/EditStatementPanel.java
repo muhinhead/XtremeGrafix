@@ -4,48 +4,46 @@ package com.xgraf;
 
 import static com.xgraf.RecordEditPanel.getBorderPanel;
 import static com.xgraf.RecordEditPanel.getGridPanel;
+import com.xgraf.orm.Statement;
 import com.xgraf.orm.dbobject.DbObject;
 import com.xlend.util.Java2sAutoComboBox;
+import com.xlend.util.PopupDialog;
 import com.xlend.util.SelectedDateSpinner;
 import com.xlend.util.SelectedNumberSpinner;
+import com.xlend.util.Util;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.rmi.RemoteException;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
 
-public class EditStatementPanel extends RecordEditPanel {
+public class EditStatementPanel extends BaseEditDocPanel {
+
     private SelectedDateSpinner statementDateSP;
     private JLabel dtlLbl;
     private JLabel termsLbl;
-  
+    private JLabel balanceLabel;
+    private SelectedNumberSpinner paymentDueNumberSpinner;
 
     public EditStatementPanel(DbObject dbObject) {
         super(dbObject);
     }
 
-//column: statement_id type: INT class: java.lang.Integer
     private JTextField idField;
-//column: company_id type: INT class: java.lang.Integer
     private JComboBox companyIdComboBox;
-//column: contact_id type: INT class: java.lang.Integer
     private JComboBox contactIdComboBox;
-//column: statement_ref type: VARCHAR class: java.lang.String
     private JTextField statementRefField;
-//column: statement_date type: DATE class: java.sql.Date
-//column: outstanding_balance type: DECIMAL class: java.math.BigDecimal
-//column: bank_acc_holder type: VARCHAR class: java.lang.String
-    private JTextField bankAccHolderField;
-//column: bank type: VARCHAR class: java.lang.String
-    private JTextField bankField;
-//column: bank_branch_code type: VARCHAR class: java.lang.String
-    private JTextField bankBranchCodeField;
-//column: bank_acc_no type: VARCHAR class: java.lang.String
-    private JTextField bankAccNoField;
-//column: bank_acc_type type: VARCHAR class: java.lang.String
-    private Java2sAutoComboBox bankAccTypeCB;
-//column: payment_due type: TINYINT class: java.lang.Integer
-    private SelectedNumberSpinner paymentDueNumberSpinner;
+
+    //private JTextField bankAccHolderField;
+    //private JTextField bankField;
+    //private JTextField bankBranchCodeField;
+    //private JTextField bankAccNoField;
+    //private Java2sAutoComboBox bankAccTypeCB;
+    //private SelectedNumberSpinner paymentDueNumberSpinner;
 
     @Override
     protected void fillContent() {
@@ -60,6 +58,8 @@ public class EditStatementPanel extends RecordEditPanel {
             "Account No:",
             "Account Type:",
             "<html><b>Terms & </b></html>",
+            "Payment of outstanding balance is due within:",
+            "", "", "", ""
         };
         JComponent[] edits = new JComponent[]{
             getGridPanel(idField = new JTextField(), 5),
@@ -73,22 +73,94 @@ public class EditStatementPanel extends RecordEditPanel {
             bankField = new JTextField(),
             getGridPanel(bankBranchCodeField = new JTextField(), 3),
             getGridPanel(bankAccNoField = new JTextField(), 3),
-            bankAccTypeCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct("statement", "bank_acc_type")),
+            bankAccTypeCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct(new String[]{"statement", "quote", "invoice"}, "bank_acc_type")),
             termsLbl = new JLabel("Conditions"),
+            getBorderPanel(new JComponent[]{paymentDueNumberSpinner = new SelectedNumberSpinner(1, 1, 365, 1)}),
+            new JPanel(), new JPanel(), new JPanel(),
+            balanceLabel = new JLabel("0.0")
         };
-        
+        idField.setEnabled(false);
+        statementDateSP.setEditor(new JSpinner.DateEditor(statementDateSP, "dd/MM/yyyy"));
+        Util.addFocusSelectAllAction(statementDateSP);
+        bankAccTypeCB.setEditable(true);
+        bankAccTypeCB.setStrict(false);
+
         organizePanels(titles, edits, null);
         //TODO
+        MyJideTabbedPane detailsTab = new MyJideTabbedPane();
+        if (getDbObject() != null) {
+            try {
+                detailsTab.add(getItmGrid(getDbObject()), "Items");
+            } catch (RemoteException ex) {
+                XGrafWorks.logAndShowMessage(ex);
+            }
+        } else {
+            detailsTab.add(new JLabel(" To add some items save first this record then open for editing"), "Items");
+        }
+
+        add(detailsTab, BorderLayout.CENTER);
     }
 
     @Override
     public void loadData() {
-        //TODO
+        Statement st = (Statement) getDbObject();
+        if (st != null) {
+            idField.setText(st.getStatementId().toString());
+            statementRefField.setText(st.getStatementRef());
+            statementDateSP.setValue(new java.util.Date(st.getStatementDate().getTime()));
+            bankAccHolderField.setText(st.getBankAccHolder());
+            bankField.setText(st.getBank());
+            bankBranchCodeField.setText(st.getBankBranchCode());
+            bankAccNoField.setText(st.getBankAccNo());
+            paymentDueNumberSpinner.setValue(st.getPaymentDue());
+            selectComboItem(companyCB, st.getCompanyId());
+            selectComboItem(contactPersonCB, st.getContactId());
+        }
     }
 
     @Override
     public boolean save() throws Exception {
+        Statement st = (Statement) getDbObject();
+        boolean isNew = (st == null);
+        if (isNew) {
+            st = new Statement(null);
+            st.setStatementId(0);
+        }
+        st.setStatementRef(statementRefField.getText());
+        java.util.Date dt = (java.util.Date) statementDateSP.getValue();
+        st.setStatementDate(new java.sql.Date(dt.getTime()));
+        st.setBank(bankField.getText());
+        st.setBankAccHolder(bankAccHolderField.getText());
+        st.setBankBranchCode(bankBranchCodeField.getText());
+        st.setBankAccNo(bankAccNoField.getText());
+        st.setBankAccType((String) bankAccTypeCB.getSelectedItem());
+        st.setCompanyId(getSelectedCbItem(companyCB));
+        st.setContactId(getSelectedCbItem(contactPersonCB));
+        st.setPaymentDue((Integer) paymentDueNumberSpinner.getValue());
+        st.setOutstandingBalance(Double.parseDouble(balanceLabel.getText().substring(1)));
+        return saveDbRecord((DbObject) st, isNew);
+    }
+
+    @Override
+    protected String tableName() {
+        return "statement";
+    }
+
+    @Override
+    protected JPanel getPrintPanel(PopupDialog dlg) {
         //TODO
-        return true;
+        return new JPanel();
+    }
+
+    @Override
+    public void recalcTotal(Integer docID) {
+        //TODO
+        System.out.println("!!!!!here the balance should be recalculated");
+    }
+
+    private GeneralGridPanel getItmGrid(DbObject dbObject) throws RemoteException {
+        StatementitemGrid itmGrid = new StatementitemGrid(XGrafWorks.getExchanger(), dbObject.getPK_ID(), this);
+        itmGrid.setPreferredSize(new Dimension(itmGrid.getPreferredSize().width, 300));
+        return itmGrid;
     }
 }

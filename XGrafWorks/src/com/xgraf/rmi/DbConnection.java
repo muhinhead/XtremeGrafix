@@ -168,6 +168,19 @@ public class DbConnection {
         + "    constraint statement_pk primary key (statement_id),"
         + "    constraint statement_company_fk foreign key (company_id) references company (company_id),"
         + "    constraint statement_contact_fk foreign key (contact_id) references contact (contact_id)    "
+        + ")",
+        "create table statementitem"
+        + "("
+        + "     statementitem_id int not null auto_increment,"
+        + "     statement_id int not null,"
+        + "     stitem_date date,"
+        + "     stitem_ref varchar(32),"
+        + "     descry varchar(255) not null,"
+        + "     amount decimal(10,2),"
+        + "     payment decimal(10,2),"
+        + "     balance decimal(10,2),"
+        + "     constraint statementitem_pk primary key (statementitem_id),"
+        + "     constraint statementitem_statement_fk foreign key (statement_id) references statement (statement_id)"
         + ")"
     };
 

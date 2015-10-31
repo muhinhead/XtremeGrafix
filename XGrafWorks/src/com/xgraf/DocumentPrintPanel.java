@@ -151,7 +151,7 @@ class DocumentPrintPanel extends GeneralReportPanel {
                         + "</tr><td style=\"font-size: " + Math.round(prevZoomerValue + 0.5) 
                         + "%; font-family: sans-serif\" align=\"left\">Important: Please make use of "+(docClass == Quote.class ? (null == document.getIsProforma() || document.getIsProforma() == 0 ? "quote" : "pro-forma invoice") : "invoice")+" ref # when making payments </td></tr>"
                         + "</tr><td style=\"font-size: " + Math.round(prevZoomerValue + 0.5) + "%; font-family: sans-serif\" align=\"left\">Full payment confirms your order. Manyfactoring will commence after funds have cleared.</td></tr>"
-                        + "</tr><td style=\"font-size: " + Math.round(prevZoomerValue + 0.5) + "%; font-family: sans-serif\" align=\"left\">Preferred method of payment is EFT.  We regret, no cheques will be accepted.</td></tr>"
+                        + "</tr><td style=\"font-size: " + Math.round(prevZoomerValue + 0.5) + "%; font-family: sans-serif\" align=\"left\">Preferred method of payment is "+document.getPrefPayMethod()+".  We regret, no cheques will be accepted.</td></tr>"
                         + "</tr><td style=\"font-size: " + Math.round(prevZoomerValue + 0.5) + "%; font-family: sans-serif\" align=\"left\">All goods shall remain the property of X-treme Grafi-X cc until paid for in full.</td></tr>"
                         + "</table>"
                         + "</tr>"

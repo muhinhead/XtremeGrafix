@@ -24,22 +24,27 @@ public class EditInvoicePanel extends EditQuotePanel {
         super(dbObject);
     }
     
+    @Override
     protected String docRefLabel() {
         return "Invoice ref #:";
     }
     
+    @Override
     protected String validUntilLabel() {
         return "Invoices valid until:";
     }
     
+    @Override
     protected String tableName() {
         return "invoice";
     }
     
+    @Override
     protected JPanel getPrintPanel(PopupDialog dlg) {
         return new DocumentPrintPanel(dlg,(Invoice)getDbObject(), Invoiceitem.class);
     }
     
+    @Override
     public void recalcTotal(Integer docID) {
         double total = 0.0;
         try {
