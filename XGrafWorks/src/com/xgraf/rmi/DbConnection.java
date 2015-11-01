@@ -175,12 +175,12 @@ public class DbConnection {
         + "     statement_id int not null,"
         + "     stitem_date date,"
         + "     stitem_ref varchar(32),"
-        + "     descry varchar(255) not null,"
+        + "     descr varchar(255) not null,"
         + "     amount decimal(10,2),"
         + "     payment decimal(10,2),"
         + "     balance decimal(10,2),"
         + "     constraint statementitem_pk primary key (statementitem_id),"
-        + "     constraint statementitem_statement_fk foreign key (statement_id) references statement (statement_id)"
+        + "     constraint statementitem_statement_fk foreign key (statement_id) references statement (statement_id) on delete cascade"
         + ")"
     };
 

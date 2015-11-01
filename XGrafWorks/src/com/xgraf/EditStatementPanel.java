@@ -59,7 +59,8 @@ public class EditStatementPanel extends BaseEditDocPanel {
             "Account Type:",
             "<html><b>Terms & </b></html>",
             "Payment of outstanding balance is due within:",
-            "", "", "", ""
+            "", "", "", 
+            "Outstanding Account Balance:"
         };
         JComponent[] edits = new JComponent[]{
             getGridPanel(idField = new JTextField(), 5),

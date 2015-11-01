@@ -8,6 +8,7 @@ import com.xgraf.orm.Statementitem;
 public class EditStatementitemDialog extends EditRecordDialog {
 
     public static boolean okPressed;
+    public static Integer statementID = null;
     public EditStatementitemDialog(String title, Statementitem rec) {
         super(title, rec);
     }

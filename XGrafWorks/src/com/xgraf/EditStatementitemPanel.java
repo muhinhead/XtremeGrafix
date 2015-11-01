@@ -2,42 +2,97 @@
 // generated file, so all hand editions will be overwritten
 package com.xgraf;
 
+import static com.xgraf.RecordEditPanel.getGridPanel;
+import com.xgraf.orm.Statementitem;
 import com.xgraf.orm.dbobject.DbObject;
+import com.xlend.util.Java2sAutoComboBox;
+import com.xlend.util.SelectedDateSpinner;
+import com.xlend.util.SelectedNumberSpinner;
+import com.xlend.util.Util;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 public class EditStatementitemPanel extends RecordEditPanel {
+
+    private SelectedNumberSpinner amountSP;
+    private SelectedNumberSpinner paymentSP;
+    private SelectedNumberSpinner balanceSP;
+    private SelectedDateSpinner dateSP;
 
     public EditStatementitemPanel(DbObject dbObject) {
         super(dbObject);
     }
 
-//column: statementitem_id type: INT class: java.lang.Integer
-    private JTextField statementitemIdField;
-//column: statement_id type: INT class: java.lang.Integer
-    private JComboBox statementIdComboBox;
-//column: stitem_date type: DATE class: java.sql.Date
-//column: stitem_ref type: VARCHAR class: java.lang.String
-    private JTextField stitemRefField;
-//column: descry type: VARCHAR class: java.lang.String
-    private JTextField descryField;
-//column: amount type: DECIMAL class: java.math.BigDecimal
-//column: payment type: DECIMAL class: java.math.BigDecimal
-//column: balance type: DECIMAL class: java.math.BigDecimal
+    private JTextField idField;
+    private Java2sAutoComboBox statemRefField;
+    private JTextField descrField;
 
     @Override
     protected void fillContent() {
         //TODO
+        String[] titles = {
+            "ID:", //Ref#
+            "Date:",
+            "Description:",
+            "Amount:",
+            "Payment:",
+            "Balance:"
+        };
+        JComponent[] edits = new JComponent[]{
+            getBorderPanel(new JComponent[]{
+                idField = new JTextField(5),
+                new JLabel("Ref#", SwingConstants.RIGHT),
+                statemRefField = new Java2sAutoComboBox(XGrafWorks.loadDistinct(
+                new String[]{"statement", "quote", "invoice"}, new String[]{"statement_ref", "quote_ref", "invoice_ref"})),}),
+            getBorderPanel(new JComponent[]{dateSP = new SelectedDateSpinner()}),
+            descrField = new JTextField(40),
+            getBorderPanel(new JComponent[]{amountSP = new SelectedNumberSpinner(0.0, 0.0, 999999.9, 0.01)}),
+            getBorderPanel(new JComponent[]{paymentSP = new SelectedNumberSpinner(0.0, 0.0, 999999.9, 0.01)}),
+            getBorderPanel(new JComponent[]{balanceSP = new SelectedNumberSpinner(0.0, 0.0, 999999.9, 0.01)})
+        };
+
+        idField.setEnabled(false);
+        statemRefField.setEditable(true);
+        statemRefField.setStrict(false);
+        dateSP.setEditor(new JSpinner.DateEditor(dateSP, "dd/MM/yyyy"));
+        Util.addFocusSelectAllAction(dateSP);
+        organizePanels(titles, edits, null);
     }
 
     @Override
     public void loadData() {
-        //TODO
+        Statementitem si = (Statementitem) getDbObject();
+        if (si != null) {
+            idField.setText(si.getStatementitemId().toString());
+            statemRefField.setSelectedItem(si.getStitemRef());
+            dateSP.setValue(new java.util.Date(si.getStitemDate().getTime()));
+            descrField.setText(si.getDescr());
+            amountSP.setValue(si.getAmount());
+            paymentSP.setValue(si.getPayment());
+            balanceSP.setValue(si.getBalance());
+        }
     }
 
     @Override
     public boolean save() throws Exception {
-        //TODO
-        return true;
+        Statementitem si = (Statementitem) getDbObject();
+        boolean isNew = (si == null);
+        if (isNew) {
+            si = new Statementitem(null);
+            si.setStatementitemId(0);
+        }
+        si.setStatementId(EditStatementitemDialog.statementID);
+        si.setStitemRef((String) statemRefField.getSelectedItem());
+        java.util.Date dt = (java.util.Date) dateSP.getValue();
+        si.setStitemDate(new java.sql.Date(dt.getTime()));
+        si.setDescr(descrField.getText());
+        si.setAmount((Double) amountSP.getValue());
+        si.setPayment((Double) paymentSP.getValue());
+        si.setBalance((Double) balanceSP.getValue());
+        return saveDbRecord(si, isNew);
     }
 }

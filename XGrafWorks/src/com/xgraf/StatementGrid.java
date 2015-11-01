@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 public class StatementGrid extends GeneralGridPanel {
@@ -38,7 +39,7 @@ public class StatementGrid extends GeneralGridPanel {
 
     @Override
     protected AbstractAction addAction() {
-        return new AbstractAction("Add record") {
+        return new AbstractAction("Add record", new ImageIcon(XGrafWorks.loadImage("newdocument.png", StatementGrid.class))) {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 EditStatementDialog ed = new EditStatementDialog("Add Statement", null);
@@ -52,7 +53,7 @@ public class StatementGrid extends GeneralGridPanel {
 
     @Override
     protected AbstractAction editAction() {
-        return new AbstractAction("Edit") {
+        return new AbstractAction("Edit", new ImageIcon(XGrafWorks.loadImage("edit.png", StatementGrid.class))) {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 int id = getSelectedID();
@@ -73,7 +74,7 @@ public class StatementGrid extends GeneralGridPanel {
 
     @Override
     protected AbstractAction delAction() {
-        return new AbstractAction("Delete") {
+        return new AbstractAction("Delete", new ImageIcon(XGrafWorks.loadImage("trash.png", StatementGrid.class))) {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 int id = getSelectedID();

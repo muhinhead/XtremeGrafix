@@ -330,7 +330,7 @@ public class XGrafWorks {
     }
 
     public static ComboItem[] loadContactsOnCompany(Integer compamnyID) {
-        return loadOnSelect("select contact_id,name from contact where company_id=" 
+        return loadOnSelect("select contact_id,name from contact where company_id="
                 + compamnyID.toString() + " order by name");
     }
 
@@ -342,11 +342,26 @@ public class XGrafWorks {
         }
         return lst;
     }
-    
+
+    public static List loadDistinct(String[] tables, String[] columns) {
+        StringBuilder sb = new StringBuilder("select 0,'' as colname ");
+        //for (String table : tables) {
+        for (int i = 0; i < tables.length && i < columns.length; i++) {
+            sb.append(" union select distinct 0," + columns[i] + " from " + tables[i]);
+        }
+        sb.append(" order by colname");
+        ComboItem[] itms = loadOnSelect(sb.toString());
+        List lst = new ArrayList(itms.length);
+        for (ComboItem ci : itms) {
+            lst.add(ci.getValue());
+        }
+        return lst;
+    }
+
     public static List loadDistinct(String[] tables, String column) {
-        StringBuilder sb = new StringBuilder("select 0,'' as "+column);
+        StringBuilder sb = new StringBuilder("select 0,'' as " + column);
         for (String table : tables) {
-            sb.append(" union select distinct 0,"+column+" from "+table);
+            sb.append(" union select distinct 0," + column + " from " + table);
         }
         sb.append(" order by " + column);
         ComboItem[] itms = loadOnSelect(sb.toString());
