@@ -71,8 +71,8 @@ public class DbConnection {
             }
         }
     }
-    private static final int DB_VERSION_ID = 2;
-    public static final String DB_VERSION = "0.2";
+    private static final int DB_VERSION_ID = 3;
+    public static final String DB_VERSION = "0.3";
     private static boolean isFirstTime = true;
     private static Properties props = new Properties();
     private static String[] createLocalDBsqls = loadDDLscript("crebas.sql", ";");

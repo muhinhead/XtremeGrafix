@@ -23,27 +23,27 @@ public class EditInvoicePanel extends EditQuotePanel {
     public EditInvoicePanel(DbObject dbObject) {
         super(dbObject);
     }
-    
+
     @Override
     protected String docRefLabel() {
         return "Invoice ref #:";
     }
-    
+
     @Override
     protected String validUntilLabel() {
         return "Invoices valid until:";
     }
-    
+
     @Override
     protected String tableName() {
         return "invoice";
     }
-    
+
     @Override
     protected JPanel getPrintPanel(PopupDialog dlg) {
-        return new DocumentPrintPanel(dlg,(Invoice)getDbObject(), Invoiceitem.class);
+        return getDbObject() != null ? new DocumentPrintPanel(dlg, (Invoice) getDbObject(), Invoiceitem.class) : new JPanel();
     }
-    
+
     @Override
     public void recalcTotal(Integer docID) {
         double total = 0.0;
@@ -58,7 +58,7 @@ public class EditInvoicePanel extends EditQuotePanel {
         }
         totalLabel.setText("R" + total);
     }
-    
+
     @Override
     protected GeneralGridPanel getItmGrid(IDocument q) throws RemoteException {
         InvoiceitemGrid itmGrid = new InvoiceitemGrid(XGrafWorks.getExchanger(), q.getPK_ID(), this);

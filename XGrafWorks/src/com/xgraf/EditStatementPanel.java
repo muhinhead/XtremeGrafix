@@ -4,6 +4,8 @@ package com.xgraf;
 
 import static com.xgraf.RecordEditPanel.getBorderPanel;
 import static com.xgraf.RecordEditPanel.getGridPanel;
+import com.xgraf.orm.Invoice;
+import com.xgraf.orm.Invoiceitem;
 import com.xgraf.orm.Statement;
 import com.xgraf.orm.dbobject.DbObject;
 import com.xlend.util.Java2sAutoComboBox;
@@ -12,8 +14,12 @@ import com.xlend.util.SelectedDateSpinner;
 import com.xlend.util.SelectedNumberSpinner;
 import com.xlend.util.Util;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
 import java.rmi.RemoteException;
+import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -44,7 +50,6 @@ public class EditStatementPanel extends BaseEditDocPanel {
     //private JTextField bankAccNoField;
     //private Java2sAutoComboBox bankAccTypeCB;
     //private SelectedNumberSpinner paymentDueNumberSpinner;
-
     @Override
     protected void fillContent() {
         String[] titles = {
@@ -59,7 +64,7 @@ public class EditStatementPanel extends BaseEditDocPanel {
             "Account Type:",
             "<html><b>Terms & </b></html>",
             "Payment of outstanding balance is due within:",
-            "", "", "", 
+            "", "", "",
             "Outstanding Account Balance:"
         };
         JComponent[] edits = new JComponent[]{
@@ -147,10 +152,30 @@ public class EditStatementPanel extends BaseEditDocPanel {
         return "statement";
     }
 
+    AbstractAction printAction() {
+        return new AbstractAction("Print", new ImageIcon(XGrafWorks.loadImage("printform.png", EditRecordDialog.class))) {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new PopupDialog(null, "Print preview", getDbObject()) {
+                    @Override
+                    protected Color getHeaderBackground() {
+                        return XGrafWorks.HDR_COLOR;
+                    }
+
+                    @Override
+                    protected void fillContent() {
+                        super.fillContent();
+                        getContentPane().add(getPrintPanel(this), BorderLayout.CENTER);
+                        setPreferredSize(new Dimension(750, 700));
+                    }
+                };
+            }
+        };
+    }
+    
     @Override
     protected JPanel getPrintPanel(PopupDialog dlg) {
-        //TODO
-        return new JPanel();
+        return getDbObject() != null ? new StatementPrintPanel(dlg, (Statement) getDbObject()) : new JPanel();
     }
 
     @Override

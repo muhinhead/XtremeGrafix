@@ -63,7 +63,7 @@ public class EditQuotePanel extends BaseEditDocPanel {
     // should be overriden for EditInvoicePanel
     @Override
     protected JPanel getPrintPanel(PopupDialog dlg) {
-        return new DocumentPrintPanel(dlg, (Quote) getDbObject(), Quoteitem.class);
+        return getDbObject() != null ? new DocumentPrintPanel(dlg, (Quote) getDbObject(), Quoteitem.class) : new JPanel();
     }
 
     // should be overriden for EditInvoicePanel
@@ -119,7 +119,7 @@ public class EditQuotePanel extends BaseEditDocPanel {
             bankField = new JTextField(),
             getGridPanel(bankBranchCodeField = new JTextField(), 3),
             getGridPanel(bankAccNoField = new JTextField(), 3),
-            bankAccTypeCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct(new String[]{"statement","quote","invoice"}, "bank_acc_type")),
+            bankAccTypeCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct(new String[]{"statement", "quote", "invoice"}, "bank_acc_type")),
             termsLbl = new JLabel("Conditions"),
             getBorderPanel(new JComponent[]{
                 validDateSP = new SelectedDateSpinner(),
@@ -137,7 +137,7 @@ public class EditQuotePanel extends BaseEditDocPanel {
                 outBalanceWeeksSP = new SelectedNumberSpinner(3, 0, 52, 1),
                 new JPanel(), new JPanel()
             }),
-            prefPayMethodCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct(new String[]{"quote","invoice"}, "pref_pay_method")),
+            prefPayMethodCB = new Java2sAutoComboBox(XGrafWorks.loadDistinct(new String[]{"quote", "invoice"}, "pref_pay_method")),
             new JPanel(),
             totalLabel = new JLabel("0.0")
         };
@@ -177,7 +177,6 @@ public class EditQuotePanel extends BaseEditDocPanel {
         itmGrid.setPreferredSize(new Dimension(itmGrid.getPreferredSize().width, 300));
         return itmGrid;
     }
-
 
     @Override
     public void loadData() {

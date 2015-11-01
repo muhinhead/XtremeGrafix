@@ -3,6 +3,8 @@
 package com.xgraf;
 
 import com.xgraf.orm.Statement;
+import javax.swing.JButton;
+import javax.swing.JPanel;
 
 public class EditStatementDialog extends EditRecordDialog {
 
@@ -19,6 +21,11 @@ public class EditStatementDialog extends EditRecordDialog {
     @Override
     protected void setOkPressed(boolean b) {
         okPressed = b;
+    }
+    
+    @Override
+    protected void addBeforeButtons(JPanel btnPanel) {  
+        btnPanel.add(new JButton(((EditStatementPanel)getEditPanel()).printAction()));
     }
 }
 
