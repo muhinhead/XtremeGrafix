@@ -7,6 +7,7 @@ import static com.xgraf.RecordEditPanel.getGridPanel;
 import com.xgraf.orm.Invoice;
 import com.xgraf.orm.Invoiceitem;
 import com.xgraf.orm.Statement;
+import com.xgraf.orm.Statementitem;
 import com.xgraf.orm.dbobject.DbObject;
 import com.xlend.util.Java2sAutoComboBox;
 import com.xlend.util.PopupDialog;
@@ -18,6 +19,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.rmi.RemoteException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
@@ -121,6 +124,7 @@ public class EditStatementPanel extends BaseEditDocPanel {
             paymentDueNumberSpinner.setValue(st.getPaymentDue());
             selectComboItem(companyCB, st.getCompanyId());
             selectComboItem(contactPersonCB, st.getContactId());
+            recalcTotal(st.getPK_ID());
         }
     }
 
@@ -172,7 +176,7 @@ public class EditStatementPanel extends BaseEditDocPanel {
             }
         };
     }
-    
+
     @Override
     protected JPanel getPrintPanel(PopupDialog dlg) {
         return getDbObject() != null ? new StatementPrintPanel(dlg, (Statement) getDbObject()) : new JPanel();
@@ -180,8 +184,17 @@ public class EditStatementPanel extends BaseEditDocPanel {
 
     @Override
     public void recalcTotal(Integer docID) {
-        //TODO
-        System.out.println("!!!!!here the balance should be recalculated");
+        try {
+            double sum = 0.0;
+            DbObject[] itms = XGrafWorks.getExchanger().getDbObjects(Statementitem.class, "statement_id=" + docID, null);
+            for (DbObject o : itms) {
+                Statementitem itm = (Statementitem) o;
+                sum += (itm.getBalance());
+            }
+            balanceLabel.setText("R" + Math.round(100*sum)/100.0);
+        } catch (RemoteException ex) {
+            XGrafWorks.logAndShowMessage(ex);
+        }
     }
 
     private GeneralGridPanel getItmGrid(DbObject dbObject) throws RemoteException {

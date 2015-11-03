@@ -60,7 +60,7 @@ public class StatementGrid extends GeneralGridPanel {
                 if (id != 0) {
                     try {
                         Statement statement = (Statement) exchanger.loadDbObjectOnID(Statement.class, id);
-                        new EditStatementDialog("Edit record", statement);
+                        new EditStatementDialog("Edit Statement", statement);
                         if (EditStatementDialog.okPressed) {
                             refresh();
                         }

@@ -112,7 +112,7 @@ public class QuoteGrid extends GeneralGridPanel {
                         if (isProFormInvoice()) {
                             new EditProFormaInvoiceDialog("Edit Pro-Forma Invoice", quote);
                         } else {
-                            new EditQuoteDialog("Edit record", quote);
+                            new EditQuoteDialog("Edit Quote", quote);
                         }
                         if (EditQuoteDialog.okPressed) {
                             refresh();
@@ -159,6 +159,7 @@ public class QuoteGrid extends GeneralGridPanel {
                             if (GeneralFrame.yesNo("Attention!", "Do you want to generate a tax invoice?") == JOptionPane.YES_OPTION) {
                                 Quote q = (Quote) exchanger.loadDbObjectOnID(Quote.class, id);
                                 InvoiceFromQuote iq = new InvoiceFromQuote(q, exchanger);
+                                iq.setQuoteId(q.getQuoteId());
                                 iq.save();
                                 new EditInvoiceDialog("New Tax Invoice based on the quote", iq);
                             }

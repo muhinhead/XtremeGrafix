@@ -15,6 +15,8 @@ import javax.swing.JLabel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 public class EditStatementitemPanel extends RecordEditPanel {
 
@@ -56,10 +58,23 @@ public class EditStatementitemPanel extends RecordEditPanel {
         };
 
         idField.setEnabled(false);
+        balanceSP.setEnabled(false);
         statemRefField.setEditable(true);
         statemRefField.setStrict(false);
         dateSP.setEditor(new JSpinner.DateEditor(dateSP, "dd/MM/yyyy"));
         Util.addFocusSelectAllAction(dateSP);
+        
+        ChangeListener recalcListener = new ChangeListener(){
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                double balance = ((Double)paymentSP.getValue()).doubleValue() - ((Double)amountSP.getValue()).doubleValue();
+                balanceSP.setValue(new Double(balance));
+            }
+        };
+        
+        amountSP.addChangeListener(recalcListener);
+        paymentSP.addChangeListener(recalcListener);
+        
         organizePanels(titles, edits, null);
     }
 
